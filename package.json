@@ -1,0 +1,35 @@
+{
+  "name": "@danielkalen/taglist",
+  "version": "1.0.0",
+  "description": "Tag-style key:value lists with dynamic value calculation",
+  "main": "index.js",
+  "scripts": {
+    "postversion": "echo \\'$(json -f package.json version)\\' > .version.coffee && npm run build",
+    "build": "npm run build:pretty && npm run build:ugly",
+    "build:ugly": "simplyimport -i src/taglist.coffee | coffee -b -s -c > dist/taglist.pretty.js && uglifyjs dist/taglist.pretty.js -m -c keep_fargs,unused=false -o dist/taglist.js",
+    "build:pretty": "simplyimport -i src/taglist.coffee | coffee -b -s -c > dist/taglist.pretty.js && cp -f dist/taglist.pretty.js dist/taglist.js",
+    "watch": "simplywatch -g 'src/*' -x 'npm run build:pretty -s'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danielkalen/taglist.git"
+  },
+  "author": "danielkalen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/danielkalen/taglist/issues"
+  },
+  "homepage": "https://github.com/danielkalen/taglist#readme",
+  "dependencies": {
+    "@danielkalen/simplybind": "^1.7.1"
+  },
+  "devDependencies": {
+    "closure-compiler-service": "^0.6.1",
+    "coffee-script": "^1.11.1",
+    "foreach-cli": "^1.6.1",
+    "fsevents": "^1.0.15",
+    "json": "^9.0.4",
+    "simplyimport": "^2.3.1",
+    "simplywatch": "^2.2.2"
+  }
+}
