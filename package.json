@@ -27,6 +27,9 @@
   "dependencies": {
     "@danielkalen/simplybind": "^1.7.1"
   },
+  "peerDependencies": {
+    "jquery": "*"
+  },
   "devDependencies": {
     "closure-compiler-service": "^0.6.1",
     "coffee-script": "^1.11.1",
