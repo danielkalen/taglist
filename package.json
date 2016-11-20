@@ -2,12 +2,16 @@
   "name": "@danielkalen/taglist",
   "version": "1.0.0",
   "description": "Tag-style key:value lists with dynamic value calculation",
-  "main": "index.js",
+  "main": "dist/taglist.umd.js",
   "scripts": {
     "postversion": "echo \\'$(json -f package.json version)\\' > .version.coffee && npm run build",
-    "build": "npm run build:pretty && npm run build:ugly",
-    "build:ugly": "simplyimport -i src/taglist.coffee | coffee -b -s -c > dist/taglist.pretty.js && uglifyjs dist/taglist.pretty.js -m -c keep_fargs,unused=false -o dist/taglist.js",
+    "build": "npm run build:ugly",
+    "build:ugly": "npm run build:ugly.window && npm run build:ugly.umd",
+    "build:ugly.window": "simplyimport -i src/taglist.coffee -c windowExport | coffee -b -s -c > dist/taglist.pretty.js && uglifyjs dist/taglist.pretty.js -m -c keep_fargs,unused=false -o dist/taglist.js",
+    "build:ugly.umd": "simplyimport -i src/taglist.coffee -c umdExport | coffee -b -s -c > dist/taglist.umd.pretty.js && uglifyjs dist/taglist.umd.pretty.js -m -c keep_fargs,unused=false -o dist/taglist.umd.js",
     "build:pretty": "simplyimport -i src/taglist.coffee | coffee -b -s -c > dist/taglist.pretty.js && cp -f dist/taglist.pretty.js dist/taglist.js",
+    "build:pretty.window": "simplyimport -i src/taglist.coffee -c windowExport | coffee -b -s -c > dist/taglist.pretty.js && cp -f dist/taglist.pretty.js dist/taglist.js",
+    "build:pretty.umd": "simplyimport -i src/taglist.coffee -c umdExport | coffee -b -s -c > dist/taglist.umd.pretty.js && cp -f dist/taglist.umd.pretty.js dist/taglist.umd.js",
     "watch": "simplywatch -g 'src/*' -x 'npm run build:pretty -s'"
   },
   "repository": {

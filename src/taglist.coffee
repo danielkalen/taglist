@@ -12,5 +12,5 @@ do ($=jQuery)->
 
 
 
-
-	window.TagList = TagList
+	import [windowExport] _parts/export.window.coffee
+	import [umdExport] _parts/export.umd.coffee	
