@@ -1,0 +1,3 @@
+defaultOptions =
+	'default': []
+	'itemLabel': 'Option'
