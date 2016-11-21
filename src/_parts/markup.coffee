@@ -13,8 +13,8 @@ markup =
 	tag:
 		container: ()->
 			"<div class='TagList-Tag'></div>"
-		closeButton: ()->
-			"<div class='TagList-Tag-closeButton'>×</div>"
+		removeButton: ()->
+			"<div class='TagList-Tag-removeButton'>×</div>"
 		text: ()-> "
 			<div class='TagList-Tag-text'>
 				<b>{{label}}</b>: {{value}}

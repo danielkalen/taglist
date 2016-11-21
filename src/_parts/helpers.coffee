@@ -40,12 +40,12 @@ genTransformStyle = (value, scaleValue)->
 
 
 
-genTransformOriginStyle = (values)->
-	webkitTransformOrigin: values
-	mozTransformOrigin: values
-	msTransformOrigin: values
-	oTransformOrigin: values
-	transformOrigin: values
+genTransformOriginStyle = (xValue)->
+	webkitTransformOrigin: "#{xValue} 0%"
+	mozTransformOrigin: "#{xValue} 0%"
+	msTransformOrigin: "#{xValue} 0%"
+	oTransformOrigin: "#{xValue} 0%"
+	transformOrigin: "#{xValue} 0%"
 
 
 
