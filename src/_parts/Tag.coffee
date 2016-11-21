@@ -23,6 +23,7 @@ Tag = (@list, @options, @data={}, popupContent)->
 
 Tag::appendToDOM = ()->
 	@applyStyles(@els.container, TagList.style.tag.container)
+	@applyStyles(@els.text, TagList.style.tag.text)
 	@applyStyles(@els.removeButton, TagList.style.tag.removeButton)
 
 	@els.container.insertBefore(@list.els.addButton)

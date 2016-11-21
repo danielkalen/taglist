@@ -5,7 +5,8 @@ applyStyles = (el, styleObject, additional)->
 	for key,value of styleObject
 		switch typeof value
 			when 'object'
-				@applyStyles(target, value)
+				;
+				# @applyStyles(target, value)
 
 			when 'function'
 				returnedValue = value(@)
@@ -26,9 +27,32 @@ removeStyles = (el, styleObject, stylesToReinstate)->
 	@applyStyles(el, stylesToRemove, stylesToReinstate)
 
 
+defaultDimensions = 
+	'maxWidth': 350
+	'leftPadding': 20
+	'rightPadding': 20
+	'offset': 25
+
+getDefaultDimensions = (boundingElDimensions)->
+	DIMENSIONS = $.extend {}, defaultDimensions
+	DIMENSIONS.leftPadding += boundingElDimensions.x
+	DIMENSIONS.rightPadding += Popup.windowWidth - (boundingElDimensions.x + boundingElDimensions.width)
+
+	return DIMENSIONS
+
+
+
+getElDimensions = (el, leftPadding=0)->
+	dimensions = el.getBoundingClientRect()
+	dimensions.x = dimensions.left - leftPadding
+	dimensions.y = dimensions.top
+	dimensions.centerLeft = dimensions.left + dimensions.width/2
+	return dimensions
+
+
 
 genTransformStyle = (value, scaleValue)->
-	scale = if scaleValue? then "scale(scaleValue)" else ''
+	scale = if scaleValue? then "scale(#{scaleValue})" else ''
 	translate = "translate(#{value})"
 	transformString = "#{translate} #{scale}"
 

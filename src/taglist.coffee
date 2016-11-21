@@ -10,13 +10,14 @@ do ($=jQuery)->
 		@applyStyles = applyStyles.bind(@)
 		@removeStyles = removeStyles.bind(@)
 		@options = $.extend(true, {}, defaultOptions, options)
+		@options.boundingEl = $(@options.boundingEl)
 		@tags = []
 		@current = {}
 		@els = {}
 		@els.container = $(markup.container()).data('TagList', @)
 		@els.overlay = $(markup.overlay()).prependTo(document.body)
 		@els.addButton = $(markup.addButton(@options.itemLabel)).appendTo(@els.container)
-		@popup = new Popup(@, @els.addButton)
+		@popup = new Popup(@, @els.addButton, true)
 
 		tagOption.name ?= tagOption.label for tagOption in @tagOptions
 		for defaultTagName,defaultTagValue of @options.default
@@ -37,7 +38,7 @@ do ($=jQuery)->
 		@tags.push tagObj = new Tag(@, tagOption, tagData, popupContent)
 		
 		SimplyBind('value', updateOnBind:false).of(tagObj)
-			.to ()=> @triggerChange()
+			.to ()=> @notifyChange()
 
 
 
@@ -45,6 +46,7 @@ do ($=jQuery)->
 		@applyStyles(@els.container, TagList.style.container)
 		@applyStyles(@els.overlay, TagList.style.overlay)
 		@applyStyles(@els.addButton, TagList.style.addButton)
+		@applyStyles(@els.addButton.children(), TagList.style.addButton.text)
 
 		@els.container.appendTo(@targetContainer)
 
@@ -52,7 +54,7 @@ do ($=jQuery)->
 
 	TagList::attachBindings = ()->
 		SimplyBind(0).ofEvent('click').of(@els.addButton)
-			.to ()=> @openPopup()
+			.to ()=> @popup.open()
 
 		SimplyBind(0).ofEvent('click').of(@popup.els.button)
 			.to ()=>
@@ -63,8 +65,11 @@ do ($=jQuery)->
 			.to('selectedTag').of(@).bothWays()
 			.chainTo (selectedTag)=> if selectedTag
 				@current.dataObj = {value:null}
-				@current.tagOption = @tagOptions.find (tagOption)-> tagOption.name is selectedTag
-				@current.contentElement = $(tagOption.content(@current.dataObj)).appendTo()
+				@current.tagOption = @tagOptions.find (tagOption)-> tagOption.label is selectedTag
+				@current.contentElement = $(@current.tagOption.content(@current.dataObj))
+				@popup.els.content.empty().append(@current.contentElement)
+
+		SimplyBind(@tags, {trackArrayChildren:false, updateOnBind:false}).to ()=> @notifyChange()
 
 
 
@@ -73,16 +78,14 @@ do ($=jQuery)->
 		tag.popup.close() for tag in @tags
 
 
-
-	TagList::triggerChange = ()->
+	TagList::getValues = ()->
 		tags = @tags
-		values = new ()-> @[tag.name] = tag.value for tag in tags
-		
-		@options.onChange?(values, @)
+		new ()-> @[tag.name] = tag.value for tag in tags; @
 
 
-	TagList::getTagOptionByName = (targetName)->
-		@tagOptions.find (tagOption)-> tagOption.name is targetName
+	TagList::notifyChange = ()->		
+		@options.onChange?(@getValues(), @)
+
 
 
 
@@ -97,8 +100,7 @@ do ($=jQuery)->
 
 
 	TagList.style = styles
-	TagList.tagBGColor = '#bebebe'
-	TagList.tagTextColor = '#000'
 	TagList.version = import ../.version.coffee
+	window?.TagList = TagList
 	import [windowExport] _parts/export.window.coffee
 	import [umdExport] _parts/export.umd.coffee	
