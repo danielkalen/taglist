@@ -26,6 +26,8 @@ markup =
 			"<div class='TagList-Popup'></div>"
 		selectWrapper: ()->
 			"<div class='TagList-Popup-selectField'></div>"
+		selectArrow: ()->
+			"<div class='TagList-Popup-selectField-arrow'></div>"
 		selectFake: ()->
 			"<div class='TagList-Popup-selectField-fake'></div>"
 		selectInput: (itemLabel)-> "

@@ -11,6 +11,7 @@ do ($=jQuery)->
 		@removeStyles = removeStyles.bind(@)
 		@options = $.extend(true, {}, defaultOptions, options)
 		@options.boundingEl = $(@options.boundingEl)
+		@tagOptionsAvailable = @tagOptions.slice()
 		@tags = []
 		@current = {}
 		@els = {}
@@ -36,9 +37,18 @@ do ($=jQuery)->
 
 	TagList::add = (tagData, tagOption, popupContent)->
 		@tags.push tagObj = new Tag(@, tagOption, tagData, popupContent)
+		@tagOptionsAvailable.splice @tagOptionsAvailable.indexOf(tagOption), 1
 		
 		SimplyBind('value', updateOnBind:false).of(tagObj)
 			.to ()=> @notifyChange()
+
+
+	TagList::remove = (tagInstance)->
+		tagInstance.popup.close()
+		tagInstance.els.container.remove()
+		@tags.splice @tags.indexOf(tagInstance), 1
+		
+		@tagOptionsAvailable.push tagInstance.options
 
 
 
@@ -65,7 +75,7 @@ do ($=jQuery)->
 			.to('selectedTag').of(@).bothWays()
 			.chainTo (selectedTag)=> if selectedTag
 				@current.dataObj = {value:null}
-				@current.tagOption = @tagOptions.find (tagOption)-> tagOption.label is selectedTag
+				@current.tagOption = @getTagOptionByLabel(selectedTag)
 				@current.contentElement = $(@current.tagOption.content(@current.dataObj))
 				@popup.els.content.empty().append(@current.contentElement)
 
@@ -86,6 +96,9 @@ do ($=jQuery)->
 	TagList::notifyChange = ()->		
 		@options.onChange?(@getValues(), @)
 
+
+	TagList::getTagOptionByLabel = (targetLabel)->
+		@tagOptions.find (tagOption)-> tagOption.label is targetLabel
 
 
 

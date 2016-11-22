@@ -8,6 +8,7 @@ Popup = (@list, @parent, @hasSelect)->
 	@els.content = $(markup.popup.content()).appendTo(@els.container)
 	if @hasSelect
 		@els.selectWrapper = $(markup.popup.selectWrapper()).insertBefore(@els.content)
+		@els.selectArrow = $(markup.popup.selectArrow()).appendTo(@els.selectWrapper)
 		@els.selectFake = $(markup.popup.selectFake()).appendTo(@els.selectWrapper)
 		@els.selectInput = $(markup.popup.selectInput @list.options.itemLabel).appendTo(@els.selectWrapper)
 		@els.button = $(markup.popup.button @list.options.itemLabel).appendTo(@els.container)
@@ -24,6 +25,7 @@ Popup::appendToDOM = ()->
 	@applyStyles(@els.content, TagList.style.popup.content)
 	if @hasSelect
 		@applyStyles(@els.selectWrapper, TagList.style.popup.selectWrapper)
+		@applyStyles(@els.selectArrow, TagList.style.popup.selectArrow)
 		@applyStyles(@els.selectFake, TagList.style.popup.selectFake)
 		@applyStyles(@els.selectInput, TagList.style.popup.selectInput)
 		@applyStyles(@els.button, TagList.style.popup.button)
@@ -58,7 +60,7 @@ Popup::attachBindings = ()->
 		SimplyBind('isOpen').of(@)
 			.to (isOpen)=> @applyStyles(@els.content, TagList.style.popup.content.isRevealed) if isOpen
 	else
-		SimplyBind('tagOptions').of(@list)
+		SimplyBind(@list.tagOptionsAvailable, trackArrayChildren:false)
 			.to('innerHTML.options').of(@els.selectInput)
 				.transform (options)->
 					output = ''
