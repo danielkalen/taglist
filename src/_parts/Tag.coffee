@@ -8,7 +8,7 @@ Tag = (@list, @options, @data={}, popupContent)->
 	@els.container = $(markup.tag.container()).data('Tag', @)
 	@els.text = $(markup.tag.text()).appendTo(@els.container)
 	@els.removeButton = $(markup.tag.removeButton()).appendTo(@els.container)
-	@popup = new Popup(@list, @els.container)
+	@popup = new Popup(@list, @els.container, @options.popup)
 
 	if popupContent
 		$(popupContent).appendTo(@popup.els.content)

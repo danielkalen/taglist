@@ -1,6 +1,7 @@
-Popup = (@list, @parent, @hasSelect)->
+Popup = (@list, @parent, options={}, @hasSelect)->
 	@applyStyles = applyStyles.bind(@)
 	@removeStyles = removeStyles.bind(@)
+	@options = $.extend {}, defaultPopupOptions, options
 	@isOpen = false
 	@currentOffset = x:0, y:0, scale:0
 	@els = {}
@@ -95,8 +96,8 @@ Popup::open = ()-> new Promise (resolve)=>
 	targetDimensions = 'y': parentDimensions.y+parentDimensions.height+DIMENSIONS.offset
 	
 
-	if windowWidth > DIMENSIONS.maxWidth+(DIMENSIONS.leftPadding+DIMENSIONS.rightPadding)
-		targetDimensions.width = DIMENSIONS.maxWidth
+	if windowWidth > @options.maxWidth+(DIMENSIONS.leftPadding+DIMENSIONS.rightPadding)
+		targetDimensions.width = @options.maxWidth
 	else
 		targetDimensions.width = windowWidth-(DIMENSIONS.leftPadding+DIMENSIONS.rightPadding)
 		targetDimensions.x = DIMENSIONS.leftPadding
@@ -173,8 +174,8 @@ Popup::resetWidth = (newWidth)->
 	DIMENSIONS = getDefaultDimensions(boundingElDimensions)
 	windowWidth = Popup.windowWidth - DIMENSIONS.leftPadding - DIMENSIONS.rightPadding
 	
-	if windowWidth > DIMENSIONS.maxWidth+(DIMENSIONS.leftPadding+DIMENSIONS.rightPadding)
-		targetWidth = DIMENSIONS.maxWidth
+	if windowWidth > @options.maxWidth+(DIMENSIONS.leftPadding+DIMENSIONS.rightPadding)
+		targetWidth = @options.maxWidth
 	else
 		targetWidth = windowWidth-(DIMENSIONS.leftPadding+DIMENSIONS.rightPadding)
 

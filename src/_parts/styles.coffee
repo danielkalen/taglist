@@ -6,7 +6,7 @@ styles.container =
 
 styles.overlay =
 	position: 'fixed'
-	zIndex: 200
+	zIndex: 2000
 	top: 0
 	left: 0
 	width: '100vw'
@@ -20,6 +20,7 @@ styles.overlay.isRevealed =
 styles.addButton = 
 	position: 'relative'
 	display: 'inline-block'
+	verticalAlign: 'top'
 	height: '28px'
 	width: '28px'
 	border: '2px dashed'
@@ -49,10 +50,12 @@ styles.addButton.text =
 styles.tag = {}
 styles.tag.container =
 	position: 'relative'
-	float: 'left'
-	display: 'block'
+	# float: 'left'
+	display: 'inline-block'
+	verticalAlign: 'top'
 	height: '28px'
 	marginRight: '10px'
+	marginBottom: '6px'
 	padding: '0 25px 0 10px'
 	borderRadius: '4px'
 	textAlign: 'center'
@@ -89,7 +92,7 @@ styles.tag.removeButton =
 styles.popup = {}
 styles.popup.container = 
 	position: 'fixed'
-	zIndex: 201
+	zIndex: 2001
 	backgroundColor: 'white'
 	borderRadius: '5px'
 	boxShadow: '0px 3px 18px rgba(0,0,0,0.24)'
@@ -102,7 +105,7 @@ styles.popup.container.transition =
 
 styles.popup.content = 
 	display: 'none'
-	padding: '20px'
+	padding: (popup)-> "#{popup.options.padding}px"
 	boxSizing: 'border-box'
 
 styles.popup.content.isRevealed = 

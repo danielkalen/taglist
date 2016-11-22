@@ -18,7 +18,7 @@ do ($=jQuery)->
 		@els.container = $(markup.container()).data('TagList', @)
 		@els.overlay = $(markup.overlay()).prependTo(document.body)
 		@els.addButton = $(markup.addButton(@options.itemLabel)).appendTo(@els.container)
-		@popup = new Popup(@, @els.addButton, true)
+		@popup = new Popup(@, @els.addButton, null, true)
 
 		tagOption.name ?= tagOption.label for tagOption in @tagOptions
 		for defaultTagName,defaultTagValue of @options.default
@@ -90,7 +90,10 @@ do ($=jQuery)->
 
 	TagList::getValues = ()->
 		tags = @tags
-		new ()-> @[tag.name] = tag.value for tag in tags; @
+		new ()->
+			for tag in tags
+				@[tag.name] = if tag.options.valueTransform then tag.options.valueTransform(tag.value) else tag.value
+			return @
 
 
 	TagList::notifyChange = ()->		
