@@ -63,10 +63,10 @@ do ($=jQuery)->
 
 
 	TagList::attachBindings = ()->
-		SimplyBind(0).ofEvent('click').of(@els.addButton)
+		SimplyBind('event:click').of(@els.addButton)
 			.to ()=> @popup.open()
 
-		SimplyBind(0).ofEvent('click').of(@popup.els.button)
+		SimplyBind('event:click').of(@popup.els.button)
 			.to ()=>
 				@add(@current.dataObj, @current.tagOption, @current.contentElement)
 				@popup.close().then ()=> @selectedTag = ''

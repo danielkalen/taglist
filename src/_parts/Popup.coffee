@@ -54,7 +54,7 @@ Popup::attachBindings = ()->
 	SimplyBind('currentOffset').of(@)
 		.to (offset)=> @applyStyles @els.container, genTransformStyle("#{offset.x}px, #{offset.y}px", offset.scale)
 
-	SimplyBind(0).ofEvent('click').of(@list.els.overlay)
+	SimplyBind('event:click').of(@list.els.overlay)
 		.to ()=> @close()
 
 	if not @hasSelect
@@ -184,12 +184,12 @@ Popup::resetWidth = (newWidth)->
 
 
 
-SimplyBind(0).ofEvent('scroll').of(window)
+SimplyBind('event:scroll').of(window)
 	.to ()->
 		Popup.windowScrollY = window.scrollY
 		Popup.windowScrollX = window.scrollX
 
-SimplyBind(0).ofEvent('resize').of(window)
+SimplyBind('event:resize').of(window)
 	.to ()->
 		Popup.windowHeight = window.innerHeight
 		Popup.windowWidth = window.innerWidth

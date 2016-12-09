@@ -39,10 +39,10 @@ Tag::attachBindings = ()->
 		.to('textContent.value').of(@els.text)
 			.transform (value)=> if @options.valueFormatter then @options.valueFormatter(value) else value
 
-	SimplyBind(0).ofEvent('click').of(@els.removeButton)
+	SimplyBind('event:click').of(@els.removeButton)
 		.to (event)=> @list.remove(@); event.stopPropagation()
 
-	SimplyBind(0).ofEvent('click').of(@els.container)
+	SimplyBind('event:click').of(@els.container)
 		.to (event)=> @popup.open()
 
 	SimplyBind('value', updateOnBind:!!@data.value).of(@data)
