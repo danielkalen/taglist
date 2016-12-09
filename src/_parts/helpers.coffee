@@ -5,8 +5,7 @@ applyStyles = (el, styleObject, additional)->
 	for key,value of styleObject
 		switch typeof value
 			when 'object'
-				;
-				# @applyStyles(target, value)
+				@applyStyles(target, value) if target.style[key]?
 
 			when 'function'
 				returnedValue = value(@)

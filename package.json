@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/danielkalen/taglist#readme",
   "dependencies": {
-    "@danielkalen/simplybind": "^1.7.1"
+    "@danielkalen/simplybind": "^1.11.0"
   },
   "peerDependencies": {
     "jquery": "*"
