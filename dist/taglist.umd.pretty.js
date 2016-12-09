@@ -11,6 +11,9 @@
       value = styleObject[key];
       switch (typeof value) {
         case 'object':
+          if (target.style[key] != null) {
+            this.applyStyles(target, value);
+          }
           break;
         case 'function':
           returnedValue = value(this);
@@ -430,7 +433,7 @@
         return _this.applyStyles(_this.els.container, genTransformStyle(offset.x + "px, " + offset.y + "px", offset.scale));
       };
     })(this));
-    SimplyBind(0).ofEvent('click').of(this.list.els.overlay).to((function(_this) {
+    SimplyBind('event:click').of(this.list.els.overlay).to((function(_this) {
       return function() {
         return _this.close();
       };
@@ -593,11 +596,11 @@
       width: targetWidth + "px"
     });
   };
-  SimplyBind(0).ofEvent('scroll').of(window).to(function() {
+  SimplyBind('event:scroll').of(window).to(function() {
     Popup.windowScrollY = window.scrollY;
     return Popup.windowScrollX = window.scrollX;
   });
-  SimplyBind(0).ofEvent('resize').of(window).to(function() {
+  SimplyBind('event:resize').of(window).to(function() {
     Popup.windowHeight = window.innerHeight;
     return Popup.windowWidth = window.innerWidth;
   });
@@ -652,13 +655,13 @@
         }
       };
     })(this));
-    SimplyBind(0).ofEvent('click').of(this.els.removeButton).to((function(_this) {
+    SimplyBind('event:click').of(this.els.removeButton).to((function(_this) {
       return function(event) {
         _this.list.remove(_this);
         return event.stopPropagation();
       };
     })(this));
-    SimplyBind(0).ofEvent('click').of(this.els.container).to((function(_this) {
+    SimplyBind('event:click').of(this.els.container).to((function(_this) {
       return function(event) {
         return _this.popup.open();
       };
@@ -733,12 +736,12 @@
     return this.els.container.appendTo(this.targetContainer);
   };
   TagList.prototype.attachBindings = function() {
-    SimplyBind(0).ofEvent('click').of(this.els.addButton).to((function(_this) {
+    SimplyBind('event:click').of(this.els.addButton).to((function(_this) {
       return function() {
         return _this.popup.open();
       };
     })(this));
-    SimplyBind(0).ofEvent('click').of(this.popup.els.button).to((function(_this) {
+    SimplyBind('event:click').of(this.popup.els.button).to((function(_this) {
       return function() {
         _this.add(_this.current.dataObj, _this.current.tagOption, _this.current.contentElement);
         return _this.popup.close().then(function() {
@@ -800,7 +803,7 @@
     });
   };
   TagList.style = styles;
-  TagList.version = '1.0.0';
+  TagList.version = '1.0.1';
   if (typeof window !== "undefined" && window !== null) {
     window.TagList = TagList;
   }
