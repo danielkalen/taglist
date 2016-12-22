@@ -1,6 +1,6 @@
 {
   "name": "@danielkalen/taglist",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Tag-style key:value lists with dynamic value calculation",
   "main": "dist/taglist.umd.js",
   "scripts": {
