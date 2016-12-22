@@ -79,7 +79,7 @@ do ($=jQuery)->
 				@current.contentElement = $(@current.tagOption.content(@current.dataObj))
 				@popup.els.content.empty().append(@current.contentElement)
 
-		SimplyBind(@tags, {trackArrayChildren:false, updateOnBind:false}).to ()=> @notifyChange()
+		SimplyBind('array:tags', updateOnBind:false).of(@).to ()=> @notifyChange()
 
 
 

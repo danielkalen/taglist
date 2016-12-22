@@ -61,7 +61,7 @@ Popup::attachBindings = ()->
 		SimplyBind('isOpen').of(@)
 			.to (isOpen)=> @applyStyles(@els.content, TagList.style.popup.content.isRevealed) if isOpen
 	else
-		SimplyBind(@list.tagOptionsAvailable, trackArrayChildren:false)
+		SimplyBind('array:tagOptionsAvailable').of(@list)
 			.to('innerHTML.options').of(@els.selectInput)
 				.transform (options)->
 					output = ''
@@ -184,20 +184,17 @@ Popup::resetWidth = (newWidth)->
 
 
 
-SimplyBind('event:scroll').of(window)
-	.to ()->
-		Popup.windowScrollY = window.scrollY
-		Popup.windowScrollX = window.scrollX
-
-SimplyBind('event:resize').of(window)
-	.to ()->
-		Popup.windowHeight = window.innerHeight
-		Popup.windowWidth = window.innerWidth
+SimplyBind(()->
+	Popup.windowScrollY = window.scrollY
+	Popup.windowScrollX = window.scrollX
+).updateOn('event:scroll').of(window)
 
 
-Popup.windowScroll = window.scrollY
-Popup.windowHeight = window.innerHeight
-Popup.windowWidth = window.innerWidth
+SimplyBind(()->
+	Popup.windowHeight = window.innerHeight
+	Popup.windowWidth = window.innerWidth
+).updateOn('event:resize').of(window)
+
 
 
 
