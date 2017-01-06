@@ -23,6 +23,7 @@ do ($=jQuery)->
 		tagOption.name ?= tagOption.label for tagOption in @tagOptions
 		for defaultTagName,defaultTagValue of @options.default
 			tagOption = @tagOptions.find (tagOption)-> tagOption.name is defaultTagName
+			defaultTagValue = defaultTagValue() if typeof defaultTagValue is 'function'
 			@add(value:defaultTagValue, tagOption)
 
 		@attachBindings()
