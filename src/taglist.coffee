@@ -21,7 +21,7 @@ do ($=jQuery)->
 		@popup = new Popup(@, @els.addButton, null, true)
 
 		tagOption.name ?= tagOption.label for tagOption in @tagOptions
-		for defaultTagName,defaultTagValue of @options.default
+		for defaultTagName,defaultTagValue of @options.default when defaultTagValue
 			tagOption = @tagOptions.find (tagOption)-> tagOption.name is defaultTagName
 			defaultTagValue = defaultTagValue() if typeof defaultTagValue is 'function'
 			@add(value:defaultTagValue, tagOption)
