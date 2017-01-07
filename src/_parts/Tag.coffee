@@ -45,8 +45,13 @@ Tag::attachBindings = ()->
 	SimplyBind('event:click').of(@els.container)
 		.to (event)=> @popup.open()
 
-	SimplyBind('value', updateOnBind:!!@data.value).of(@data)
-		.to('value').of(@)
+	if @options.arrayValue
+		@data.value ?= []
+		SimplyBind('array:value').of(@data)
+			.to('value').of(@)
+	else
+		SimplyBind('value', updateOnBind:!!@data.value).of(@data)
+			.to('value').of(@)
 
 
 

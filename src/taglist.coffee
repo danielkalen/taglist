@@ -40,7 +40,8 @@ do ($=jQuery)->
 		@tags.push tagObj = new Tag(@, tagOption, tagData, popupContent)
 		@tagOptionsAvailable.splice @tagOptionsAvailable.indexOf(tagOption), 1
 		
-		SimplyBind('value', updateOnBind:false).of(tagObj)
+		selector = if tagObj.options.arrayValue then 'array:value' else 'value'
+		SimplyBind(selector, updateOnBind:false).of(tagObj)
 			.to ()=> @notifyChange()
 
 
