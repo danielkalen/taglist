@@ -632,6 +632,7 @@
     return this.els.container.insertBefore(this.list.els.addButton);
   };
   Tag.prototype.attachBindings = function() {
+    var base;
     SimplyBind('label').of(this).to('textContent.label').of(this.els.text).transform((function(_this) {
       return function(label) {
         if (_this.options.labelFormatter) {
@@ -661,9 +662,16 @@
         return _this.popup.open();
       };
     })(this));
-    return SimplyBind('value', {
-      updateOnBind: !!this.data.value
-    }).of(this.data).to('value').of(this);
+    if (this.options.arrayValue) {
+      if ((base = this.data).value == null) {
+        base.value = [];
+      }
+      return SimplyBind('array:value').of(this.data).to('value').of(this);
+    } else {
+      return SimplyBind('value', {
+        updateOnBind: !!this.data.value
+      }).of(this.data).to('value').of(this);
+    }
   };
   TagList = function(targetContainer, tagOptions, options) {
     var defaultTagName, defaultTagValue, i, len, ref, ref1, tagOption;
@@ -691,9 +699,15 @@
     ref1 = this.options["default"];
     for (defaultTagName in ref1) {
       defaultTagValue = ref1[defaultTagName];
+      if (!(defaultTagValue)) {
+        continue;
+      }
       tagOption = this.tagOptions.find(function(tagOption) {
         return tagOption.name === defaultTagName;
       });
+      if (typeof defaultTagValue === 'function') {
+        defaultTagValue = defaultTagValue();
+      }
       this.add({
         value: defaultTagValue
       }, tagOption);
@@ -706,10 +720,11 @@
     return this.tagOptions.push(tagOption);
   };
   TagList.prototype.add = function(tagData, tagOption, popupContent) {
-    var tagObj;
+    var selector, tagObj;
     this.tags.push(tagObj = new Tag(this, tagOption, tagData, popupContent));
     this.tagOptionsAvailable.splice(this.tagOptionsAvailable.indexOf(tagOption), 1);
-    return SimplyBind('value', {
+    selector = tagObj.options.arrayValue ? 'array:value' : 'value';
+    return SimplyBind(selector, {
       updateOnBind: false
     }).of(tagObj).to((function(_this) {
       return function() {
@@ -796,8 +811,17 @@
       return tagOption.label === targetLabel;
     });
   };
+  TagList.prototype.destroy = function() {
+    var el$, n, ref;
+    this.closeAllPopups();
+    ref = this.els;
+    for (n in ref) {
+      el$ = ref[n];
+      el$.remove();
+    }
+  };
   TagList.style = styles;
-  TagList.version = '1.0.2';
+  TagList.version = '1.1.0';
   if (typeof window !== "undefined" && window !== null) {
     window.TagList = TagList;
   }
