@@ -106,6 +106,12 @@ do ($=jQuery)->
 		@tagOptions.find (tagOption)-> tagOption.label is targetLabel
 
 
+	TagList::destroy = ()->
+		@closeAllPopups()
+		el$.remove() for n,el$ of @els
+		return
+
+
 
 
 
