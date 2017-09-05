@@ -1,0 +1,62 @@
+{
+  "1.0.70": [
+    {
+      "debug": {
+        "orig": "80.06KB",
+        "gzip": "17.15KB"
+      },
+      "release": {
+        "orig": "36.24KB",
+        "gzip": "11.34KB"
+      }
+    }
+  ],
+  "1.0.71": [
+    {
+      "debug": {
+        "orig": "80.06KB",
+        "gzip": "17.15KB"
+      },
+      "release": {
+        "orig": "36.24KB",
+        "gzip": "11.34KB"
+      }
+    }
+  ],
+  "1.0.72": [
+    {
+      "debug": {
+        "orig": "80.44KB",
+        "gzip": "17.22KB"
+      },
+      "release": {
+        "orig": "36.42KB",
+        "gzip": "11.38KB"
+      }
+    }
+  ],
+  "1.0.73": [
+    {
+      "debug": {
+        "orig": "80.98KB",
+        "gzip": "17.3KB"
+      },
+      "release": {
+        "orig": "36.63KB",
+        "gzip": "11.43KB"
+      }
+    }
+  ],
+  "2.0.0": [
+    {
+      "debug": {
+        "orig": "342.94KB",
+        "gzip": "97.84KB"
+      },
+      "release": {
+        "orig": "52.13KB",
+        "gzip": "15.81KB"
+      }
+    }
+  ]
+}

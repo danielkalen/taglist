@@ -1,18 +1,29 @@
 {
-  "name": "@danielkalen/taglist",
-  "version": "1.1.0",
+  "name": "taglist",
+  "version": "2.0.0",
   "description": "Tag-style key:value lists with dynamic value calculation",
-  "main": "dist/taglist.umd.js",
+  "main": "dist/taglist.js",
+  "browser": {
+    "./debug": "dist/taglist.debug.js",
+    "./dist/taglist.js": "src/index.coffee"
+  },
+  "browserify": {
+    "transform": [
+      "simplyimport/compat"
+    ]
+  },
+  "simplyimport": {
+    "finalTransform": [
+      ".config/transforms/minify-super",
+      ".config/transforms/minify-rename",
+      ".config/transforms/minify-simple"
+    ]
+  },
   "scripts": {
-    "postversion": "echo \\'$(json -f package.json version)\\' > .version.coffee && npm run build",
-    "build": "npm run build:ugly",
-    "build:ugly": "npm run build:ugly.window && npm run build:ugly.umd",
-    "build:ugly.window": "simplyimport -i src/taglist.coffee -c windowExport | coffee -b -s -c > dist/taglist.pretty.js && uglifyjs dist/taglist.pretty.js -m -c keep_fargs,unused=false -o dist/taglist.js",
-    "build:ugly.umd": "simplyimport -i src/taglist.coffee -c umdExport | coffee -b -s -c > dist/taglist.umd.pretty.js && uglifyjs dist/taglist.umd.pretty.js -m -c keep_fargs,unused=false -o dist/taglist.umd.js",
-    "build:pretty": "simplyimport -i src/taglist.coffee | coffee -b -s -c > dist/taglist.pretty.js && cp -f dist/taglist.pretty.js dist/taglist.js",
-    "build:pretty.window": "simplyimport -i src/taglist.coffee -c windowExport | coffee -b -s -c > dist/taglist.pretty.js && cp -f dist/taglist.pretty.js dist/taglist.js",
-    "build:pretty.umd": "simplyimport -i src/taglist.coffee -c umdExport | coffee -b -s -c > dist/taglist.umd.pretty.js && cp -f dist/taglist.umd.pretty.js dist/taglist.umd.js",
-    "watch": "simplywatch -g 'src/*' -x 'npm run build:pretty -s'"
+    "postversion": "npm run build && git add . && git commit -a -m '[Build]'",
+    "postpublish": "git push",
+    "watch": "cake -d watch",
+    "build": "cake -d build && cake build && cake measure && cp -r build/* dist/"
   },
   "repository": {
     "type": "git",
@@ -25,18 +36,17 @@
   },
   "homepage": "https://github.com/danielkalen/taglist#readme",
   "dependencies": {
-    "@danielkalen/simplybind": "^1.13.0"
-  },
-  "peerDependencies": {
-    "jquery": "*"
+    "@danielkalen/simplybind": "^1.15.8",
+    "quickdom": "^1.0.73"
   },
   "devDependencies": {
-    "closure-compiler-service": "^0.6.1",
-    "coffee-script": "^1.11.1",
-    "foreach-cli": "^1.6.1",
-    "fsevents": "^1.0.15",
-    "json": "^9.0.4",
-    "simplyimport": "^2.3.2",
-    "simplywatch": "^2.3.0"
+    "bluebird": "^3.5.0",
+    "chalk": "^2.0.1",
+    "coffee-script": "^1.12.6",
+    "execa": "^0.7.0",
+    "fs-jetpack": "^0.13.3",
+    "promise-break": "^0.1.2",
+    "semver": "^5.3.0",
+    "smart-extend": "^1.7.3"
   }
 }
