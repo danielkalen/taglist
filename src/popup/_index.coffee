@@ -100,7 +100,7 @@ class Popup
 		@el.insertAfter(@list.overlay)
 		setTimeout ()=>
 			@list.overlay.state 'isRevealed', on
-			@el.style
+			@el.state('animating',on).style
 				top: "#{targetDimensions.y}px"
 				left: "#{targetDimensions.x}px"
 				width: "#{targetDimensions.width}px"
@@ -108,7 +108,9 @@ class Popup
 				opacity: 1
 
 			@state.offset = x:0, y:0, scale:1
-			setTimeout resolve, @list.settings.animationSpeed+25
+			setTimeout ()=>
+				resolve @el.state('animating',off)
+			, @settings.animationSpeed+25
 		, 50
 
 

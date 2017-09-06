@@ -31,7 +31,7 @@ export text = DOM.template(
 
 export container = DOM.template(
 	['div'
-		ref: 'container'
+		ref: 'TagList-Tag'
 		style:
 			position: 'relative'
 			display: 'inline-block'
@@ -47,6 +47,7 @@ export container = DOM.template(
 			userSelect: 'none'
 			backgroundColor: (tag)-> tag.settings.bgColor
 			color: (tag)-> tag.settings.textColor
+			fontFamily: (tag)-> tag.list.settings.fontFamily
 
 		text,
 		removeButton

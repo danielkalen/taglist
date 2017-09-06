@@ -4,7 +4,7 @@ ease = 'cubic-bezier(0.785, 0.135, 0.15, 0.86)'
 
 export container = DOM.template(
 	['div'
-		ref: 'container'
+		ref: 'TagList-Popup'
 		style:
 			position: 'fixed'
 			zIndex: 2001
@@ -13,9 +13,11 @@ export container = DOM.template(
 			boxShadow: '0px 3px 18px rgba(0,0,0,0.24)'
 			opacity: 0
 			boxSizing: 'border-box'
-			transition: (popup)->
-				speed = popup.settings.animationSpeed
-				"opacity #{speed}ms #{ease}, transform #{speed}ms #{ease}, -webkit-transform #{speed}ms #{ease}"
+			fontFamily: (popup)-> popup.list.settings.fontFamily
+			$animating:
+				transition: (popup)->
+					speed = popup.settings.animationSpeed
+					"opacity #{speed}ms #{ease}, transform #{speed}ms #{ease}, -webkit-transform #{speed}ms #{ease}"
 		
 		['div'
 			ref: 'content'
@@ -41,8 +43,8 @@ export button = DOM.template(
 			boxSizing: 'border-box'
 			cursor: 'pointer'
 			userSelect: 'none'
-			backgroundColor: (popup)-> popup.list.settings.buttonBGColor
-			color: (popup)-> popup.list.settings.buttonTextColor
+			backgroundColor: (popup)-> popup.list.settings.button.bgColor
+			color: (popup)-> popup.list.settings.button.textColor
 			$hasContent:
 				display: 'block'
 

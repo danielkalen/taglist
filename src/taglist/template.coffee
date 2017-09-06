@@ -2,10 +2,11 @@ DOM = import 'quickdom'
 
 export container = DOM.template(
 	['div'
-		ref: 'container'
+		ref: 'TagList'
 		style:
 			position: 'relative'
 			textAlign: 'left'
+			fontFamily: (taglist)-> taglist.settings.fontFamily
 
 		computers: _init: ()->
 			addButton.spawn(null, {@relatedInstance}).appendTo(@)

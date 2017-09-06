@@ -13,7 +13,7 @@ class TagList
 			new ()-> @[tag.name] = tag for tag in tags; @
 	
 	constructor: (@targetContainer, @tagOptions=[], settings)->
-		@settings = extend.clone(defaults, settings)
+		@settings = extend.deepOnly('button').clone(defaults, settings)
 		@settings.boundingEl = DOM(@settings.boundingEl)
 		@settings.defaults ?= Object.create(null)
 		@tags = []
@@ -24,7 +24,7 @@ class TagList
 
 		tagOption.name ?= tagOption.label for tagOption in @tagOptions
 		
-		for name,value of @settings.default when value
+		for name,value of @settings.defaults when value
 			option = @_getOptionByName(name)
 			value = value() if typeof value is 'function'
 			@add(option, {value})

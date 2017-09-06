@@ -1,9 +1,11 @@
 module.exports =
 	boundingEl: document.body
 	itemLabel: 'Option'
-	buttonBGColor: '#f74425'
-	buttonTextColor: '#fff'
 	requireDefaults: false
 	templates: null
 	defaults: null
 	tags: null
+	fontFamily: 'inherit'
+	button:
+		bgColor: '#f74425'
+		textColor: '#fff'
