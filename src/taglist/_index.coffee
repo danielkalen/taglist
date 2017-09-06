@@ -38,21 +38,21 @@ class TagList
 			@popup.open()
 
 		SimplyBind('event:click').of(@popup.els.button).to ()=>
-			@add(@current.data, @current.tagOption, @current.contentElement)
+			@add(@current.tagOption, @current.data, @current.contentElement)
 			@popup.close().then ()=> @selectedTag = ''
 
-		SimplyBind('value').of(@popup.els.selectInput)
+		SimplyBind('value').of(@popup.els.selectInput.raw)
 			.to('selectedTag').of(@).bothWays()
 			.pipe (selectedTag)=> if selectedTag
 				@current.data = {value:null}
-				@current.tagOption = @tagsByName[selectedTag]
+				@current.tagOption = @_getOptionByName(selectedTag)
 				@current.contentElement = DOM(@current.tagOption.content(@current.data))
 				@popup.els.content.empty().append(@current.contentElement)
 
 		SimplyBind('array:tags', updateOnBind:false).of(@).to ()=> @_notifyChange()
 
 
-	_notifyChange: ()->		
+	_notifyChange: ()->
 		@settings.onChange?(@getValues(), @)
 
 	_getOptionByName: (name)->
@@ -72,7 +72,7 @@ class TagList
 		option = @_getOptionByName(option) if typeof option is 'string'
 		@tags.push tag = new Tag(@, option, data, popupContent)
 		
-		SimplyBind('array:value', updateOnBind:false).of(tag)
+		SimplyBind('value', updateOnBind:false).of(tag)
 			.to ()=> @_notifyChange()
 
 	remove: (tag)->

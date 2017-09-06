@@ -13,7 +13,7 @@ class Tag
 		@settings = extend.clone(defaults, @list.settings.tag)
 		@name = @config.name
 		@label = @config.label
-		@value = @config.default or ''
+		@value = @config.default or @data.value or ''
 		@el = template.container.spawn(@settings.templates?.container, relatedInstance:@)
 		@popup = new Popup(@list, @el, @config.popup)
 
