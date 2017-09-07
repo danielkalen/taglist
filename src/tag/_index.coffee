@@ -19,7 +19,7 @@ class Tag
 
 		@_attachBindings()
 		@el.insertBefore(@list.els.addButton)
-		@popup.els.content.append(if popupContent then popupContent else @config.content.call(@, @data))
+		@popup.els.content.append(if popupContent then popupContent else DOM(@config.content.call(@, @data)))
 
 
 	_attachBindings: ()->
