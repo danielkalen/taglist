@@ -95,9 +95,13 @@ class TagList
 		return
 
 	getValues: (applyTransforms=true)->
-		values = {}
-		for tag in @tags
-			values[tag.name] = tag.getValue(applyTransforms)
+		if @settings.repeatableValues
+			values = @tags.map (tag)-> {name:tag.name, value:tag.getValue(applyTransforms)}
+		else
+			values = {}
+			for tag in @tags
+				values[tag.name] = tag.getValue(applyTransforms)
+		
 		return values
 
 	setValues: (values)->

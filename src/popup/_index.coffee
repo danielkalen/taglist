@@ -10,7 +10,6 @@ class Popup
 	
 	constructor: (@list, @parent, settings, @hasSelect)->
 		@settings = extend.clone(defaults, @list.settings.popup, settings)
-		@settings.repeatableFilters = false if not settings?.repeatableFilters
 		@state = open:false, offset:{x:0, y:0, scale:0}
 		@el = template.container.spawn(@settings.templates?.container, {relatedInstance:@})
 
@@ -54,7 +53,7 @@ class Popup
 				usedTags = @list.tagsByName
 
 				for option in @list.tagOptions
-					if @settings.repeatableFilters or not usedTags[option.name]
+					if not usedTags[option.name] or @settings.repeatableValues
 						DOM.option({props:value:option.name}, option.label).appendTo(@els.selectInput)
 				return
 
