@@ -117,6 +117,7 @@ export select = DOM.template(
 		
 		['select'
 			ref: 'selectInput'
+			forceStyle: true
 			style:
 				position: 'absolute'
 				zIndex: 3

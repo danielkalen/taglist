@@ -51,9 +51,10 @@ class Popup
 				prevOptions = @els.selectInput.children.slice(1)
 				DOM.batch(prevOptions).remove() if prevOptions.length
 				usedTags = @list.tagsByName
-				
-				for option in @list.tagOptions when not usedTags[option.name]
-					DOM.option({props:value:option.name}, option.label).appendTo(@els.selectInput)
+
+				for option in @list.tagOptions
+					if not usedTags[option.name] or @settings.repeatableValues
+						DOM.option({props:value:option.name}, option.label).appendTo(@els.selectInput)
 				return
 
 			SimplyBind('value').of(@els.selectInput.raw)
