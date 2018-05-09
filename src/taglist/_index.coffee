@@ -20,8 +20,7 @@ class TagList
 		@current = Object.create(null)
 		@el = template.container.spawn(@settings.templates?.container, relatedInstance:@)
 		@overlay = template.overlay.spawn(@settings.templates?.overlay, relatedInstance:@).prependTo(document.body)
-		@popup = new Popup(@, @els.addButton, null, true)
-
+		@popup = new Popup(@, @els.addButton, @settings, true)
 		tagOption.name ?= tagOption.label for tagOption in @tagOptions
 		
 		for name,value of @settings.defaults when value
