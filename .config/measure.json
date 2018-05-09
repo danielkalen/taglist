@@ -91,6 +91,266 @@
         "orig": "52.83KB",
         "gzip": "16.04KB"
       }
+    },
+    {
+      "debug": {
+        "orig": "347.02KB",
+        "gzip": "99.11KB"
+      },
+      "release": {
+        "orig": "52.86KB",
+        "gzip": "16.05KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "346.08KB",
+        "gzip": "98.92KB"
+      },
+      "release": {
+        "orig": "52.6KB",
+        "gzip": "16KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "347.07KB",
+        "gzip": "99.14KB"
+      },
+      "release": {
+        "orig": "52.86KB",
+        "gzip": "16.05KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "347.24KB",
+        "gzip": "99.24KB"
+      },
+      "release": {
+        "orig": "51.93KB",
+        "gzip": "15.85KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "347.24KB",
+        "gzip": "99.24KB"
+      },
+      "release": {
+        "orig": "52.9KB",
+        "gzip": "16.06KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "347.03KB",
+        "gzip": "99.07KB"
+      },
+      "release": {
+        "orig": "52.84KB",
+        "gzip": "16.05KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "347.01KB",
+        "gzip": "99.08KB"
+      },
+      "release": {
+        "orig": "52.85KB",
+        "gzip": "16.05KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "347.12KB",
+        "gzip": "99.19KB"
+      },
+      "release": {
+        "orig": "52.88KB",
+        "gzip": "16.06KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "347.36KB",
+        "gzip": "99.28KB"
+      },
+      "release": {
+        "orig": "52.93KB",
+        "gzip": "16.07KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "347.25KB",
+        "gzip": "99.23KB"
+      },
+      "release": {
+        "orig": "52.91KB",
+        "gzip": "16.06KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "347.25KB",
+        "gzip": "99.24KB"
+      },
+      "release": {
+        "orig": "52.91KB",
+        "gzip": "16.07KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "347.43KB",
+        "gzip": "99.28KB"
+      },
+      "release": {
+        "orig": "52.96KB",
+        "gzip": "16.08KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "347.45KB",
+        "gzip": "99.3KB"
+      },
+      "release": {
+        "orig": "52.94KB",
+        "gzip": "16.08KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "347.45KB",
+        "gzip": "99.29KB"
+      },
+      "release": {
+        "orig": "52.94KB",
+        "gzip": "16.08KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "348.07KB",
+        "gzip": "99.4KB"
+      },
+      "release": {
+        "orig": "53.01KB",
+        "gzip": "16.09KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "347.57KB",
+        "gzip": "99.34KB"
+      },
+      "release": {
+        "orig": "52.97KB",
+        "gzip": "16.08KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "347.64KB",
+        "gzip": "99.34KB"
+      },
+      "release": {
+        "orig": "52.98KB",
+        "gzip": "16.08KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "348.12KB",
+        "gzip": "99.42KB"
+      },
+      "release": {
+        "orig": "53.09KB",
+        "gzip": "16.1KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "348.3KB",
+        "gzip": "99.56KB"
+      },
+      "release": {
+        "orig": "53.13KB",
+        "gzip": "16.11KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "347.67KB",
+        "gzip": "99.42KB"
+      },
+      "release": {
+        "orig": "52.99KB",
+        "gzip": "16.08KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "347.8KB",
+        "gzip": "99.42KB"
+      },
+      "release": {
+        "orig": "53KB",
+        "gzip": "16.09KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "348.13KB",
+        "gzip": "99.54KB"
+      },
+      "release": {
+        "orig": "53.07KB",
+        "gzip": "16.11KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "348.09KB",
+        "gzip": "99.41KB"
+      },
+      "release": {
+        "orig": "53.07KB",
+        "gzip": "16.1KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "348.21KB",
+        "gzip": "99.39KB"
+      },
+      "release": {
+        "orig": "53.11KB",
+        "gzip": "16.11KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "348.29KB",
+        "gzip": "99.36KB"
+      },
+      "release": {
+        "orig": "53.12KB",
+        "gzip": "16.11KB"
+      }
+    },
+    {
+      "debug": {
+        "orig": "347.94KB",
+        "gzip": "99.41KB"
+      },
+      "release": {
+        "orig": "53.01KB",
+        "gzip": "16.09KB"
+      }
     }
   ]
 }
