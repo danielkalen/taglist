@@ -23,11 +23,7 @@ class TagList
 		@popup = new Popup(@, @els.addButton, @settings, true)
 		tagOption.name ?= tagOption.label for tagOption in @tagOptions
 		
-		for name,value of @settings.defaults when value
-			option = @_getOptionByName(name)
-			value = value() if typeof value is 'function'
-			@add(option, {value})
-
+		@_applyDefaults()
 		@_attachBindings()
 		@el.appendTo(@targetContainer)
 
@@ -56,6 +52,19 @@ class TagList
 
 	_getOptionByName: (name)->
 		return @tagOptions.find (tag)-> tag.name is name
+
+	_applyDefaults: ()->
+		if Array.isArray(@settings.defaults)
+			for {name, value} in @settings.defaults when value
+				@_addFromDefault(name, value)
+		else
+			for name,value of @settings.defaults when value
+				@_addFromDefault(name, value)
+
+	_addFromDefault: (name, value)->
+		option = @_getOptionByName(name)
+		value = value() if typeof value is 'function'
+		@add(option, {value})
 
 	destroy: ()->
 		@closeAllPopups()
