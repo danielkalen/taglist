@@ -52,6 +52,9 @@ class TagList
 
 	_getOptionByName: (name)->
 		return @tagOptions.find (tag)-> tag.name is name
+	
+	_getTagByName: (name)->
+		return @tags.find (tag)-> tag.name is name
 
 	_applyDefaults: ()->
 		if Array.isArray(@settings.defaults)
@@ -115,14 +118,22 @@ class TagList
 
 	setValues: (values)->
 		tags = @tagsByName
-		for name,value of values
-			if tags[name]
-				tags[name].setValue(value)
-			
-			else if @_getOptionByName(name)
-				@add(name, {value})
 		
+		if Array.isArray(values)
+			@setValue(name, value) for {name,value} in values
+		else
+			@setValue(name, value) for name,value of values
+			
 		return
+
+	setValue: (name, value)->
+		existing = @_getTagByName(name)
+		
+		if existing
+			existing.setValue(value)
+		
+		else if @_getOptionByName(name)
+			@add(name, {value})
 
 
 
