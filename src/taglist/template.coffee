@@ -38,28 +38,38 @@ export addButton = DOM.template(
 			verticalAlign: 'top'
 			height: '28px'
 			width: '28px'
-			border: '2px dashed'
-			borderRadius: '5px'
 			boxSizing: 'border-box'
-			cursor: 'pointer'
-			userSelect: 'none'
-			opacity: 0.35
-			color: '#181818'
 
 		['div'
-			ref: 'TagListButtonText'
-			style:
-				position: 'absolute'
-				left: 0
-				right: 0
-				top: '55%'
-				transform: 'translate(0, -50%)'
+			style: 
+				# display: 'inline-block'
+				# verticalAlign: 'top'
+				height: '100%'
 				width: '100%'
-				lineHeight: 1
-				textAlign: 'center'
-				fontSize: '23px'
-				fontWeight: 600
-		'+']
+				border: '2px dashed'
+				borderRadius: '5px'
+				boxSizing: 'border-box'
+				cursor: 'pointer'
+				userSelect: 'none'
+				opacity: 0.35
+				color: '#181818'
+			
+			['div'
+				ref: 'TagListButtonText'
+				style:
+					position: 'absolute'
+					left: 0
+					right: 0
+					top: '55%'
+					transform: 'translate(0, -50%)'
+					width: '100%'
+					lineHeight: 1
+					textAlign: 'center'
+					fontSize: '23px'
+					fontWeight: 600
+			'+']
+		]
+
 	]
 )
 

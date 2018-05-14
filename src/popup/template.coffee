@@ -6,12 +6,13 @@ export container = DOM.template(
 	['div'
 		ref: 'TagList-Popup'
 		style:
-			position: 'fixed'
+			position: 'relative'
+			# position: 'fixed'
 			zIndex: 2001
 			backgroundColor: 'white'
 			borderRadius: '5px'
 			boxShadow: '0px 3px 18px rgba(0,0,0,0.24)'
-			opacity: 0
+			# opacity: 0
 			boxSizing: 'border-box'
 			fontFamily: (popup)-> popup.list.settings.fontFamily
 			$animating:
@@ -74,7 +75,8 @@ export select = DOM.template(
 		ref: 'selectWrapper'
 		style:
 			position: 'relative'
-			width: '100%'
+			# width: '100%'
+			minWidth: 250
 			height: '55px'
 			borderBottom: '1px solid #ddd'
 

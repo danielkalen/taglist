@@ -34,7 +34,8 @@ class TagList
 
 		SimplyBind('event:click').of(@popup.els.button).to ()=>
 			@add(@current.tagOption, @current.data, @current.contentElement)
-			@popup.close().then ()=> @selectedTag = ''
+			@popup.close()
+			@selectedTag = ''
 
 		SimplyBind('value').of(@popup.els.selectInput.raw)
 			.to('selectedTag').of(@).bothWays()

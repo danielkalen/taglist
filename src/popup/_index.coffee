@@ -1,3 +1,4 @@
+import Popper from 'popper.js'
 DOM = import 'quickdom'
 extend = import 'smart-extend'
 defaults = import './defaults'
@@ -19,30 +20,20 @@ class Popup
 			refreshChildren = @el.childf
 
 		@_attachBindings()
-		@el.appendTo(@parent)
+		@el.hide().appendTo(@parent)
+		@popper = new Popper @parent[0], @el[0],
+			placement: 'bottom'
+			trigger: 'manual'
+			modifiers:
+				offset:
+					enabled: true
+					offset: '5px'
+				preventOverflow:
+					enabled: true
+					boundriesElement: @list.settings.boundingEl[0] or @list.settings.boundingEl
 
 
 	_attachBindings: ()->
-		isOpen = ()=> @state.open
-		
-		SimplyBind('windowScrollY', updateOnBind:false).of(Popup)
-			.to (newScroll, prevScroll)=> @resetYPosition(newScroll, prevScroll)
-			.condition(isOpen)
-		
-		SimplyBind('windowScrollX', updateOnBind:false).of(Popup)
-			.to (newScroll, prevScroll)=> @resetXPosition(newScroll, prevScroll)
-			.condition(isOpen)
-		
-		SimplyBind('windowWidth', updateOnBind:false).of(Popup)
-			.to (newWidth, prevWidth)=> @resetWidth(newWidth, prevWidth)
-			.condition(isOpen)
-
-		SimplyBind('offset').of(@state)
-			.to (offset)=> @el.style 'transform', "translate(#{offset.x}px, #{offset.y}px) scale(#{offset.scale})"
-
-		SimplyBind('event:click').of(@list.overlay)
-			.to ()=> @close()
-
 		if not @hasSelect
 			SimplyBind('open').of(@state)
 				.to (open)=> @el.state 'hasContent', open
@@ -64,113 +55,30 @@ class Popup
 					@el.state 'hasContent', selectedOption
 
 
+	_attachOuterClickListener: ()->
+		DOM(document).on 'click.outerClick', (event)=>
+			targetParents = DOM(event.target).parents
+			@close() if not targetParents.includes(@parent)
 
-	open: ()-> new Promise (resolve)=>
-		return resolve() if @state.open
+	_detachOuterClickListener: ()->
+		DOM(document).off 'click.outerClick'
+
+
+	open: ()->
+		return if @state.open
 		@list.closeAllPopups()
 		@state.open = true
+		@el.show()
+		@popper.update()
+		@_attachOuterClickListener()
+		return @
 
-		boundingElDimensions = helpers.getElDimensions(@list.settings.boundingEl)
-		DIMENSIONS = helpers.getDefaultDimensions(boundingElDimensions)
-		windowWidth = Popup.windowWidth - DIMENSIONS.leftPadding - DIMENSIONS.rightPadding
-		parentDimensions = helpers.getElDimensions(@parent, DIMENSIONS.leftPadding)
-		targetDimensions = 'y': parentDimensions.y+parentDimensions.height+DIMENSIONS.offset
-		
-
-		if windowWidth > @settings.maxWidth+(DIMENSIONS.leftPadding+DIMENSIONS.rightPadding)
-			targetDimensions.width = @settings.maxWidth
-		else
-			targetDimensions.width = windowWidth-(DIMENSIONS.leftPadding+DIMENSIONS.rightPadding)
-			targetDimensions.x = DIMENSIONS.leftPadding
-
-		
-		if not targetDimensions.x # if x wasn't defined yet
-			targetDimensions.x = (parentDimensions.centerLeft - targetDimensions.width/2)
-
-			if targetDimensions.x < DIMENSIONS.leftPadding # If is overflowing left side of window
-				targetDimensions.x = DIMENSIONS.leftPadding
-
-			else if targetDimensions.x + targetDimensions.width + DIMENSIONS.rightPadding > windowWidth # If is overflowing right side of window
-				targetDimensions.x = windowWidth - targetDimensions.width
-
-
-		centerDiff = parentDimensions.centerLeft - (targetDimensions.x + targetDimensions.width/2)
-		targetDimensions.scaleOrigin = targetDimensions.width/2 + centerDiff
-		
-
-		@el.insertAfter(@list.overlay)
-		setTimeout ()=>
-			@list.overlay.state 'isRevealed', on
-			@el.state('animating',on).style
-				top: "#{targetDimensions.y}px"
-				left: "#{targetDimensions.x}px"
-				width: "#{targetDimensions.width}px"
-				transformOrigin: "#{targetDimensions.scaleOrigin}px 0% 0px"
-				opacity: 1
-
-			@state.offset = x:0, y:0, scale:1
-			setTimeout ()=>
-				resolve @el.state('animating',off)
-			, @settings.animationSpeed+25
-		, 50
-
-
-
-
-
-
-	close: ()-> animation = new Promise (resolve)=>
-		return resolve() if not @state.open
+	close: ()->
+		return if not @state.open
 		@state.open = false
-		@list.overlay.state 'isRevealed', off
-		@el.style 'opacity', null
-		@state.offset = extend.clone(@state.offset, {scale:0})
-
-		setTimeout ()=>
-			resolve(@el.appendTo(@parent))
-		, @list.settings.animationSpeed+25
-
-
-
-	resetYPosition: (newScrollY, prevScrollY=0)->
-		yChange = newScrollY-prevScrollY
-		@state.offset = extend.clone(@state.offset, y:@state.offset.y-yChange)
-
-
-	resetXPosition: (newScrollX, prevScrollX=0)->
-		xChange = newScrollX+prevScrollX
-		@state.offset = extend.clone(@state.offset, x:@state.offset.x-xChange)
-
-
-
-	resetWidth: (newWidth)->
-		boundingElDimensions = helpers.getElDimensions(@list.settings.boundingEl)
-		DIMENSIONS = helpers.getDefaultDimensions(boundingElDimensions)
-		windowWidth = Popup.windowWidth - DIMENSIONS.leftPadding - DIMENSIONS.rightPadding
-		
-		if windowWidth > @settings.maxWidth+(DIMENSIONS.leftPadding+DIMENSIONS.rightPadding)
-			@el.width = @settings.maxWidth
-		else
-			@el.width = windowWidth-(DIMENSIONS.leftPadding+DIMENSIONS.rightPadding)
-
-
-
-
-SimplyBind(()->
-	Popup.windowScrollY = window.scrollY
-	Popup.windowScrollX = window.scrollX
-).updateOn('event:scroll').of(window)
-
-
-SimplyBind(()->
-	Popup.windowHeight = window.innerHeight
-	Popup.windowWidth = window.innerWidth
-).updateOn('event:resize').of(window)
-
-
-
-
-
+		@el.hide()
+		@_detachOuterClickListener()
+		return @
 
 
 
