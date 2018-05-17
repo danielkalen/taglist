@@ -1,4 +1,4 @@
-DOM = import 'quickdom'
+import DOM from 'quickdom'
 
 
 export removeButton = DOM.template(
@@ -19,17 +19,27 @@ export removeButton = DOM.template(
 export text = DOM.template(
 	['div'
 		ref: 'text'
-		props: innerHTML: '<b>{{label}}</b>: {{value}}'
+		# props: innerHTML: '<b>{{label}}</b>: {{value}}'
 		style:
 			position: 'relative'
 			top: '9px'
 			fontSize: '13.2px'
 			lineHeight: 1
+
+		['div'
+			ref: 'label'
+			style:
+				fontWeight: 600
+		]
+
+		['div'
+			ref: 'value'
+		]
 	]
 )
 
 
-export container = DOM.template(
+export default DOM.template(
 	['div'
 		ref: 'TagList-Tag'
 		style:
@@ -49,7 +59,7 @@ export container = DOM.template(
 			color: (tag)-> tag.settings.textColor
 			fontFamily: (tag)-> tag.list.settings.fontFamily
 
-		text,
+		text
 		removeButton
 	]
 )

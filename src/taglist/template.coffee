@@ -1,33 +1,4 @@
-DOM = import 'quickdom'
-
-export container = DOM.template(
-	['div'
-		ref: 'TagList'
-		style:
-			position: 'relative'
-			textAlign: 'left'
-			fontFamily: (taglist)-> taglist.settings.fontFamily
-
-		computers: _init: ()->
-			addButton.spawn(null, {@relatedInstance}).appendTo(@)
-	]
-)
-
-export overlay = DOM.template(
-	['div'
-		ref: 'overlay'
-		style:
-			position: 'fixed'
-			zIndex: 2000
-			top: 0
-			left: 0
-			width: '100vw'
-			height: '100vh'
-			visibility: 'hidden'
-			$isRevealed:
-				visibility: 'visible'
-	]
-)
+import DOM from 'quickdom'
 
 export addButton = DOM.template(
 	['div'
@@ -75,4 +46,15 @@ export addButton = DOM.template(
 
 
 
+export default DOM.template(
+	['div'
+		ref: 'TagList'
+		style:
+			position: 'relative'
+			textAlign: 'left'
+			fontFamily: (taglist)-> taglist.settings.fontFamily
+
+		addButton
+	]
+)
 

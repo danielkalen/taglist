@@ -1,105 +1,156 @@
-extend = import 'smart-extend'
-DOM = import 'quickdom'
-Tag = import '../tag'
-Popup = import '../popup'
-defaults = import './defaults'
-template = import './template'
+import extend from 'smart-extend'
+import DOM from 'quickdom'
+import defaults from './defaults'
+import template from './template'
+import Tag from '../tag'
+import Popup from '../popup'
+import SelectField from '../selectField'
+import {toArray} from '../helpers'
 
-class TagList
-	Object.defineProperties @::,
-		'els': get: ()-> @el.child
-		'tagsByName': get: ()->
-			tags = @tags
-			new ()-> @[tag.name] = tag for tag in tags; @
-	
-	constructor: (@targetContainer, @tagOptions=[], settings)->
+class TagList extends require('event-lite')
+	constructor: (@targetContainer, @options=[], settings)->
+		super
 		@settings = extend.deepOnly('button').clone(defaults, settings)
 		@settings.boundingEl = DOM(@settings.boundingEl)
-		@settings.defaults ?= Object.create(null)
+		@settings.defaults = toArray(@settings.defaults or [])
 		@tags = []
-		@current = Object.create(null)
-		@el = template.container.spawn(@settings.templates?.container, relatedInstance:@)
-		@overlay = template.overlay.spawn(@settings.templates?.overlay, relatedInstance:@).prependTo(document.body)
-		@popup = new Popup(@, @els.addButton, @settings, true)
-		tagOption.name ?= tagOption.label for tagOption in @tagOptions
+		@current = {}
+		@el = template.spawn(null, relatedInstance:@)
+		@popup = new Popup(@, @els.addButton, @settings.popup, @settings.boundingEl)
+		@selectField = new SelectField(@popup.els.content, @settings)
+		option.name ?= option.label for option in @options
 		
-		@_applyDefaults()
+		@_applyDefaults(@settings.defaults)
 		@_attachBindings()
+		@_updateSelectable()
 		@el.appendTo(@targetContainer)
 
 
 	_attachBindings: ()->
-		SimplyBind('event:click').of(@els.addButton).to ()=>
+		@els.addButton.on 'click', ()=>
 			@popup.open()
-
-		SimplyBind('event:click').of(@popup.els.button).to ()=>
-			@add(@current.tagOption, @current.data, @current.contentElement)
+		
+		@selectField.on 'apply', ()=>
+			@add(@current.option, @current.data, @current.content)
 			@popup.close()
-			@selectedTag = ''
+			@_setCurrent('')
 
-		SimplyBind('value').of(@popup.els.selectInput.raw)
-			.to('selectedTag').of(@).bothWays()
-			.pipe (selectedTag)=> if selectedTag
-				@current.data = {value:null}
-				@current.tagOption = @_getOptionByName(selectedTag)
-				@current.contentElement = DOM(@current.tagOption.content(@current.data))
-				@popup.els.content.empty().append(@current.contentElement)
+		@selectField.on 'change', ({value})=>
+			@_setCurrent(value)
 
-		SimplyBind('array:tags', updateOnBind:false).of(@).to ()=> @_notifyChange()
+		# SimplyBind('array:tags', updateOnBind:false).of(@).to ()=> @_notifyChange()
 
+		@popup.on 'beforeopen', ()=>
+			@closeAllPopups()
+		
+		@on 'change', ()=>
+			@_updateSelectable()
 
-	_notifyChange: ()->
-		@settings.onChange?(@getValues(), @)
+		if @settings.onChange
+			@on 'change', @settings.onChange
 
-	_getOptionByName: (name)->
-		return @tagOptions.find (tag)-> tag.name is name
+	_setCurrent: (name)->
+		data = {value:null}
+		option = @_findOption(name)
+		content = DOM(option.content(data)) if option
+
+		@current = {data, option, content}
+		@selectField.value = name unless @selectField.value is name
+		
+		@popup.els.content.empty()
+		@popup.els.content.append(content) if content
+
 	
-	_getTagByName: (name)->
-		return @tags.find (tag)-> tag.name is name
-
-	_applyDefaults: ()->
-		if Array.isArray(@settings.defaults)
-			for {name, value} in @settings.defaults when value
-				@_addFromDefault(name, value)
+	_updateSelectable: ()->
+		if @settings.repeatableValues
+			options = @options
 		else
-			for name,value of @settings.defaults when value
-				@_addFromDefault(name, value)
+			options = @options.filter ({name})=> @_findTag(name)
+		
+		@selectField.setOptions(options)
 
-	_addFromDefault: (name, value)->
-		option = @_getOptionByName(name)
-		value = value() if typeof value is 'function'
-		@add(option, {value})
+	_applyDefaults: (defaults)->
+		defaults = toArray(defaults)
 
-	destroy: ()->
-		@closeAllPopups()
-		@el.remove()
-		@overlay.remove()
+		for {name, value} in defaults when value
+			option = @_findOption(name)
+			value = value() if typeof value is 'function'
+			@add(option, {value})
 		return
 
+	_notifyChange: (SILENT)-> unless SILENT
+		@emit 'change', @getValues(true)
+
+	_findOption: (name)->
+		return @options.find (option)-> option.name is name
+	
+	_findTag: (name)->
+		return @tags.find (tag)-> tag.name is name
+	
+	_findDefault: (name)->
+		return @defaults.find (default_)-> default_.name is name
+
 	addOption: (option)->
-		unless @_getOptionByName(option.name)
-			@tagOptions.push(option)
+		unless @_findOption(option.name)
+			@options.push(option)
 
-	add: (option, data, popupContent)->
-		option = @_getOptionByName(option) if typeof option is 'string'
-		@tags.push tag = new Tag(@, option, data, popupContent)
+	add: (option, data, content)->
+		option = @_findOption(option) if typeof option is 'string'
+		tag = new Tag(option, data, content, @settings)
+
+		tag.insertBefore els.addButton
+		tag.once 'remove', ()=> @remove(tag)
+		tag.on 'change', ()=> @_notifyChange()
+		tag.popup.on 'beforeopen', ()=> @closeAllPopups()
 		
-		SimplyBind('value', updateOnBind:false).of(tag)
-			.to ()=> @_notifyChange()
+		@tags.push(tag)
 
-	remove: (tag)->
+	remove: (tag, SILENT)->
 		tag = @tagsByName[tag] if typeof tag is 'string'
 		tag.popup.close()
 		tagIndex = @tags.indexOf(tag)
 
-		if @settings.requireDefaults and tag.name of @settings.defaults
-			tag.setValue(@settings.defaults[tag.name])
+		if @settings.requireDefaults and @_findDefault(tag.name)
+			tag.setValue(@_findDefault(tag.name))
 			@tags.splice tagIndex, 1, tag
 		else
 			tag.el.remove()
 			@tags.splice tagIndex, 1
 
+		@_notifyChange(SILENT)
 		return
+
+	removeAll: (SILENT)->
+		@remove(tag, true) for tag in @tags.slice()
+		@_notifyChange(SILENT)
+		return
+
+	setValues: (values, SILENT)->
+		for {name,value} in toArray(values)			
+			@setValue(name, value, true)
+		
+		@_notifyChange(SILENT)
+
+	setValue: (name, value, SILENT)->
+		existing = @_findTag(name)
+		
+		if existing
+			existing.setValue(value)
+		
+		else if @_findOption(name)
+			@add(name, {value})
+
+		@_notifyChange(SILENT)
+
+	replaceValues: (values, SILENT)->
+		@removeAll(true)
+		@setValues(values, true)
+		@_notifyChange(SILENT)
+
+	getValues: (applyTransforms=true)->
+		@tags.map (tag)->
+			name: tag.name
+			value: tag.getValue(applyTransforms)
 
 
 	closeAllPopups: ()->
@@ -107,35 +158,21 @@ class TagList
 		tag.popup.close() for tag in @tags
 		return
 
-	getValues: (applyTransforms=true)->
-		if @settings.repeatableValues
-			values = @tags.map (tag)-> {name:tag.name, value:tag.getValue(applyTransforms)}
-		else
-			values = {}
-			for tag in @tags
-				values[tag.name] = tag.getValue(applyTransforms)
-		
-		return values
-
-	setValues: (values)->
-		tags = @tagsByName
-		
-		if Array.isArray(values)
-			@setValue(name, value) for {name,value} in values
-		else
-			@setValue(name, value) for name,value of values
-			
+	destroy: ()->
+		@closeAllPopups()
+		@el.remove()
+		@emit 'destroy'
 		return
-
-	setValue: (name, value)->
-		existing = @_getTagByName(name)
-		
-		if existing
-			existing.setValue(value)
-		
-		else if @_getOptionByName(name)
-			@add(name, {value})
+	
 
 
 
-module.exports = TagList
+	Object.defineProperties @::,
+		'els': get: ()-> @el.child
+		'tagsByName': get: ()->
+			tags = @tags
+			new ()-> @[tag.name] = tag for tag in tags; @
+
+
+
+export default TagList
