@@ -16,6 +16,7 @@ class Tag extends require('event-lite')
 		@settings = extend.clone(defaults.settings, listSettings.tag, settings1, settings2)
 		@option = extend.clone(defaults.option, option)
 		@option.popup = extend.clone(listSettings.popup, @option.popup)
+		@state = {}
 		@name = @option.name
 		@label = @option.label
 		@el = template.spawn(null, relatedInstance:@)
@@ -44,12 +45,13 @@ class Tag extends require('event-lite')
 
 		@button.on 'click', (e)=>
 			e.stopPropagation()
-			@popup.close()
-			@_applyChanges()
+			@popup.close() if @_applyChanges()
 
-		@popup.on 'blur', ()=> if @settings.updateWhen is 'changed'
-			if not @_applyChanges()
-				@popup.open()
+		if @settings.updateWhen is 'applied'
+			@popup.on 'open', ()=> @state.valueOnFocus = @value
+			@popup.on 'blur', ()=> if @value isnt @state.valueOnFocus
+				if not @_applyChanges()
+					@popup.open()
 	
 	_initField: ()->
 		@field = @option.field.call(@, @content.raw, updater(@))

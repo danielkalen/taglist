@@ -12,9 +12,11 @@ class PseudoTag extends require('event-lite')
 		@popup = new Popup(@addButton, @settings, @settings.boundingEl)
 		@selectField = new SelectField(@settings)
 		
+		@content_ = DOM.div(@content)
 		@selectField.insertBefore(@content)
 		@applyButton.insertAfter(@content)
-		@popup.setContent(@content)
+		@popup.setContent(@content_)
+		@_setup()
 
 	_setup: ()->
 		@applyButton.on 'click', ()=>
