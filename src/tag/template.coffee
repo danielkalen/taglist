@@ -1,5 +1,45 @@
 import DOM from 'quickdom'
+import {button as button_} from '../popup/template'
 
+export button = DOM.template(
+	['div'
+		ref: 'button'
+		['div'
+			ref: 'errorMessage'
+			style:
+				boxSizing: 'border-box'
+				display: 'none'
+				padding: '10px 15px'
+				fontSize: 12
+				fontWeight: 500
+				color: '#f74425'
+
+			methods:
+				set: (message)->
+					@html = message
+					@show()
+					
+					clearTimeout(@_timeout)
+					@_timeout = setTimeout ()=>
+						@clear()
+					, 8000
+				
+				clear: ()->
+					@text = ''
+					@hide()
+		]
+		
+		button_.extend(
+			ref: 'button_'
+			['div'
+				style:
+					backgroundColor: '#d4d4d4'
+					$hover:
+						backgroundColor: (i)-> i.settings.button.bgColor
+			]
+		)
+	]
+)
 
 export removeButton = DOM.template(
 	['div'
@@ -19,29 +59,38 @@ export removeButton = DOM.template(
 export text = DOM.template(
 	['div'
 		ref: 'text'
-		# props: innerHTML: '<b>{{label}}</b>: {{value}}'
 		style:
 			position: 'relative'
 			top: '9px'
 			fontSize: '13.2px'
 			lineHeight: 1
 
-		['div'
+		['span'
 			ref: 'label'
 			style:
 				fontWeight: 600
 		]
 
-		['div'
+		['span'
 			ref: 'value'
 		]
+	]
+)
+
+export content = DOM.template(
+	['div'
+		ref: 'tagContent'
+		style:
+			boxSizing: 'border-box'
+			padding: (i)-> "#{i.settings.padding}px"
+			maxWidth: (i)-> "#{i.settings.maxWidth}px"
 	]
 )
 
 
 export default DOM.template(
 	['div'
-		ref: 'TagList-Tag'
+		ref: 'tag'
 		style:
 			position: 'relative'
 			display: 'inline-block'
@@ -57,7 +106,7 @@ export default DOM.template(
 			userSelect: 'none'
 			backgroundColor: (tag)-> tag.settings.bgColor
 			color: (tag)-> tag.settings.textColor
-			fontFamily: (tag)-> tag.list.settings.fontFamily
+			fontFamily: (tag)-> tag.settings.fontFamily
 
 		text
 		removeButton

@@ -1,17 +1,13 @@
 import Popper from 'popper.js'
 import template from './template'
 import DOM from 'quickdom'
-import extend from 'smart-extend'
-import * as defaults from './defaults'
 
 class Popup extends require('event-lite')
-	constructor: (@parent, settings, boundingEl)->
+	constructor: (@parent, @settings, boundingEl)->
 		super()
-		@settings = extend.clone(defaults, settings)
 		@state = open:false
 		@el = template.spawn(null, {relatedInstance:@})
 
-		@_attachBindings()
 		@el.hide().appendTo(@parent)
 		@popper = new Popper @parent[0], @el[0],
 			placement: 'bottom'
@@ -27,7 +23,9 @@ class Popup extends require('event-lite')
 	_attachOuterClickListener: ()->
 		DOM(document).on 'click.outerClick', (event)=>
 			targetParents = DOM(event.target).parents
-			@close() if not targetParents.includes(@parent)
+			if not targetParents.includes(@parent)
+				@close()
+				@emit 'blur'
 
 	_detachOuterClickListener: ()->
 		DOM(document).off 'click.outerClick'
@@ -52,6 +50,10 @@ class Popup extends require('event-lite')
 		@emit 'close'
 		return @
 
+	setContent: (content)->
+		@els.content.empty()
+		@els.content.append content if content
+
 
 
 	Object.defineProperties @::,
@@ -59,4 +61,4 @@ class Popup extends require('event-lite')
 
 
 
-module.exports = Popup
+export default Popup

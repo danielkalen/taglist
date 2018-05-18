@@ -37,9 +37,10 @@
   "homepage": "https://github.com/danielkalen/taglist#readme",
   "dependencies": {
     "@danielkalen/simplybind": "^1.15.8",
+    "error-ex": "^1.3.1",
     "event-lite": "^0.1.1",
     "popper.js": "^1.14.3",
-    "quickdom": "^1.0.76",
+    "quickdom": "^1.0.86",
     "rxjs-compat": "^6.1.0"
   },
   "devDependencies": {

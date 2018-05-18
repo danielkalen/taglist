@@ -1,6 +1,6 @@
 export default
 	boundingEl: document.body
-	itemLabel: 'Option'
+	tagLabel: 'Option'
 	requireDefaults: false
 	templates: null
 	defaults: null

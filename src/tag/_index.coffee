@@ -1,34 +1,39 @@
 import DOM from 'quickdom'
 import extend from 'smart-extend'
 import Popup from '../popup'
-import defaults from './defaults'
-import template from './template'
 import stringify from './stringify'
+import updater from './updater'
+import template, {content, button} from './template'
+import * as defaults from './defaults'
+import {ValidationError} from '../errors'
 
 
 class Tag extends require('event-lite')
-	constructor: (@config, @data, @content, listSettings)->
+	constructor: (option, listSettings)->
 		super()
-		@settings = extend.clone(defaults, listSettings.tag)
-		@config.popup = extend.clone(listSettings.popup, @config.popup)
-		@data ?= {}
-		@name = @config.name
-		@label = @config.label
+		settings1 = extend.keys(['button','fontFamily']).clone(listSettings)
+		settings2 = extend.keys(['padding', 'maxWidth']).clone(option)
+		@settings = extend.clone(defaults.settings, listSettings.tag, settings1, settings2)
+		@option = extend.clone(defaults.option, option)
+		@option.popup = extend.clone(listSettings.popup, @option.popup)
+		@name = @option.name
+		@label = @option.label
 		@el = template.spawn(null, relatedInstance:@)
-		@content ?= DOM(@config.content.call(@, @data))
-		@popup = new Popup(@el, @config.popup, listSettings.boundingEl)
-		@popup.els.content.append(@content)
+		@content = content.spawn(null, relatedInstance:@)
+		@button = button.spawn({data:text:'Apply'}, relatedInstance:@)
+		@popup = new Popup(@el, listSettings, listSettings.boundingEl)
+		@popup.setContent(@content)
+		@button.insertAfter(@content) if @settings.updateWhen is 'applied'
 
 		@_setup()
 		@_attachBindings()
 	
 
 	_setup: ()->
-		if @config.hideLabel
+		if @option.hideLabel
 			@els.label.hide()
 		else
-			label = if @config.labelFormatter then @config.labelFormatter(@config.label) else @config.label
-			@els.label.html = "#{label}: "
+			@els.label.html = "#{@option.label}: "
 
 	_attachBindings: ()->		
 		@els.removeButton.on 'click', (event)=>
@@ -36,56 +41,73 @@ class Tag extends require('event-lite')
 
 		@el.on 'click', ()=>
 			@popup.open()
+
+		@button.on 'click', (e)=>
+			e.stopPropagation()
+			@popup.close()
+			@_applyChanges()
+
+		@popup.on 'blur', ()=> if @settings.updateWhen is 'changed'
+			if not @_applyChanges()
+				@popup.open()
 	
-	_initContent: ()->
-		@field = @config.content.call(@, @el.child.content.raw)
-		@set(@config.default, false, false) if @config.default
+	_initField: ()->
+		@field = @option.field.call(@, @content.raw, updater(@))
+		@set(@option.default, true) if @option.default
 
 	_domInsert: (method, target)->
 		@el[method](target)
-		@_initContent()
+		@_initField()
 		return @
 
-	_updateText: (value)->
-		@els.value.text = stringify(value, @config.formatter)
+	_notifyChange: ()->
+		@emit 'change', @value
 
-	get: ()->
-		@config.getter.call(@)
-	
-	set: (value, fromField, skipChangeEvent)->
+	_updateText: (value)->
+		@els.value.text = stringify(value, @option.formatter)
+
+	_updateFromUser: (value, SILENT)->
 		@_updateText(value)
-		@config.setter.call(@, value) unless fromField
-		@emit 'change', value unless skipChangeEvent
+		@option.setter.call(@, value)
+		@_notifyChange() unless SILENT
+
+	_updateFromField: (value)->
+		@_updateText(value)
+		@_notifyChange() unless @settings.updateWhen is 'applied'
+
+	_applyChanges: ()->
+		validation = @validate()
+		if validation is true
+			@_notifyChange()
+			return true
+		
+		else if validation instanceof Error
+			@button.child.errorMessage.set(validation.message)
+			@emit 'error', validation
+			return false
+
+	get: (skipTransform)->
+		value = @option.getter.call(@)
+		value = @option.transformOutput(value) if @option.transformOutput and not skipTransform
+		return value
+	
+	set: (value, SILENT)->
+		value = value() if typeof value is 'function'
+		value = @option.transformInput(value) if @option.transformInput
+		@_updateFromUser(value, SILENT)
 
 	validate: ()->
-		return true if not @config.validate
+		return true if not @option.validate
 		try
-			result = @config.validate.call(@)
+			result = @option.validate.call(@)
 		catch err
 			result = err
 
 		switch
 			when result is true then true
-			when result is false then new errors.NotAcceptable("validation failed")
-			when typeof result is 'string' then new errors.NotAcceptable(result)
+			when result is false then new ValidationError("validation failed")
+			when typeof result is 'string' then new ValidationError(result)
 			when result instanceof Error then result
-
-
-
-	getValue: (applyTransforms=true)->
-		if applyTransforms and @config.transformOutput
-			return @config.transformOutput(@value)
-		else
-			return @value
-
-	setValue: (value, applyTransforms=true)->
-		if applyTransforms and @config.transformInput
-			value = @config.transformInput(value)
-		
-		@data.value = value
-		@emit 'change', value
-		return value
-
 
 	
 
@@ -98,6 +120,7 @@ class Tag extends require('event-lite')
 	Object.defineProperties @::,
 		els: get: ()-> @el.child
 		value: get: ()-> @get()
+		rawValue: get: ()-> @get(true)
 
 
 
@@ -105,3 +128,4 @@ class Tag extends require('event-lite')
 
 
 export default Tag
+export PseudoTag = import './pseudo'

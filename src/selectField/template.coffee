@@ -1,5 +1,13 @@
-DOM = import 'quickdom'
-SVG = import '../svg'
+import DOM from 'quickdom'
+import * as SVG from '../svg'
+import {button as button_} from '../popup/template'
+
+export button = button_.extend(
+	['div'
+		computers: _init: ()->
+			@applyData text:"Add #{@related.settings.itemLabel}"
+	]
+)
 
 export arrow = DOM.template(
 	['div'
@@ -56,7 +64,7 @@ export input = DOM.template(
 			opacity: 0
 
 		computers: _init: ()->
-			DOM.option(props:{value:''}, "Add #{@related.list.settings.itemLabel}").appendTo(@)
+			DOM.option(props:{value:''}, "Add #{@related.settings.tagLabel}").appendTo(@)
 
 		methods:
 			label: get: ()->
@@ -84,45 +92,6 @@ export field = DOM.template(
 		input
 	]
 )
-
-
-export button = DOM.template(
-	['div'
-		ref: 'button'
-		style:
-			position: 'relative'
-			display: 'none'
-			height: 50
-			borderRadius: '0 0 5px 5px'
-			boxSizing: 'border-box'
-			cursor: 'pointer'
-			userSelect: 'none'
-			backgroundColor: (i)-> i.settings.button.bgColor
-			color: (i)-> i.settings.button.textColor
-			$hasContent:
-				display: 'block'
-
-		['div'
-			ref: 'buttonText'
-			style:
-				position: 'absolute'
-				top: '53%'
-				transform: "translate(0, -50%)"
-				display: 'block'
-				width: '100%'
-				fontSize: 16
-				lineHeight: 1
-				fontWeight: 500
-				textAlign: 'center'
-				textTransform: 'uppercase'
-				letterSpacing: '1.5px'
-			
-			computers: _init: ()->
-				@text = "Add #{@related.list.settings.itemLabel}"
-		]
-	]
-)
-
 
 
 
