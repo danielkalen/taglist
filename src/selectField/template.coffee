@@ -64,7 +64,7 @@ export input = DOM.template(
 			opacity: 0
 
 		computers: _init: ()->
-			DOM.option(props:{value:''}, "Add #{@related.settings.tagLabel}").appendTo(@)
+			DOM.option(props:{value:''}, "Select #{@related.settings.tagLabel}").appendTo(@)
 
 		methods:
 			label: get: ()->
@@ -83,7 +83,7 @@ export field = DOM.template(
 		style:
 			position: 'relative'
 			# width: '100%'
-			minWidth: 250
+			minWidth: 230
 			height: '55px'
 			borderBottom: '1px solid #ddd'
 

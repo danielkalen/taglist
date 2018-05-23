@@ -48,9 +48,10 @@ class Tag extends require('event-lite')
 			@popup.close() if @_applyChanges()
 
 		if @settings.updateWhen is 'applied'
-			@popup.on 'open', ()=> @state.valueOnFocus = @value
+			@popup.on 'open', ()=> @state.valueOnFocus ?= @value
 			@popup.on 'blur', ()=> if @value isnt @state.valueOnFocus
 				if not @_applyChanges()
+					console.log 'opening'
 					@popup.open()
 	
 	_initField: ()->
@@ -80,6 +81,7 @@ class Tag extends require('event-lite')
 	_applyChanges: ()->
 		validation = @validate()
 		if validation is true
+			@state.valueOnFocus = null
 			@_notifyChange()
 			return true
 		
@@ -101,7 +103,7 @@ class Tag extends require('event-lite')
 	validate: ()->
 		return true if not @option.validate
 		try
-			result = @option.validate.call(@)
+			result = @option.validate.call(@, @value)
 		catch err
 			result = err
 
@@ -130,4 +132,4 @@ class Tag extends require('event-lite')
 
 
 export default Tag
-export PseudoTag = import './pseudo'
+export BufferTag = import './buffer'

@@ -10,6 +10,6 @@ export settings =
 export option =
 	getter: ()-> @field.value
 	setter: (value)-> @field.value = value
-	validate: ()-> true
+	validate: (value)-> value?
 
 

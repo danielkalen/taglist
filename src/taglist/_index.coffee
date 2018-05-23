@@ -2,7 +2,7 @@ import extend from 'smart-extend'
 import DOM from 'quickdom'
 import defaults from './defaults'
 import template from './template'
-import Tag, {PseudoTag} from '../tag'
+import Tag, {BufferTag} from '../tag'
 import Popup from '../popup'
 import {toArray} from '../helpers'
 
@@ -14,24 +14,25 @@ class TagList extends require('event-lite')
 		@settings.defaults = toArray(@settings.defaults or [])
 		@tags = []
 		@el = template.spawn(null, relatedInstance:@)
-		@pseudoTag = new PseudoTag(@)
+		@buffer = new BufferTag(@)
 		option.name ?= option.label for option in @options
 		
 		@_applyDefaults(@settings.defaults)
 		@_attachBindings()
 		@el.appendTo(@targetContainer)
-		@pseudoTag._updateSelectable()
+		@buffer._updateSelectable()
 
 
 	_attachBindings: ()->
-		@pseudoTag.on 'change', (option, value)=>
+		@buffer.on 'change', (option, value)=>
 			@add(option, value)
+			@_notifyChange()
 		
-		@pseudoTag.popup.on 'beforeopen', ()=>
+		@buffer.popup.on 'beforeopen', ()=>
 			@closeAllPopups()
 		
 		@on 'change', ()=>
-			@pseudoTag._updateSelectable()
+			@buffer._updateSelectable()
 
 		if @settings.onChange
 			@on 'change', @settings.onChange
@@ -49,14 +50,14 @@ class TagList extends require('event-lite')
 	_notifyChange: (SILENT)-> unless SILENT
 		@emit 'change', @getValues(true)
 
-	_findOption: (name)->
-		return @options.find (option)-> option.name is name
+	_findOption: (name, collection=@options)->
+		return collection.find (option)-> option.name is name
 	
-	_findTag: (name)->
-		return @tags.find (tag)-> tag.name is name
+	_findTag: (name, collection=@tags)->
+		return collection.find (tag)-> tag.name is name
 	
 	_findDefault: (name)->
-		return @defaults.find (default_)-> default_.name is name
+		return @settings.defaults.find (default_)-> default_.name is name
 
 	addOption: (option)->
 		unless @_findOption(option.name)
@@ -94,17 +95,15 @@ class TagList extends require('event-lite')
 		@_notifyChange(SILENT)
 		return
 
-	setValues: (values, SILENT)->
-		encounted = {}
-		
-		for {name,value} in toArray(values)
-			@setValue(name, value, true, encounted[name]?)
-			encounted[name] = 1
+	setValues: (values, SILENT)->		
+		for {name,value},index in toArray(values)
+			@setValue(name, value, true, index)
 		
 		@_notifyChange(SILENT)
 
-	setValue: (name, value, SILENT, skipExisting)->
-		existing = not skipExisting and @_findTag(name)
+	setValue: (name, value, SILENT, fromIndex)->
+		collection = if fromIndex then @tags.slice(fromIndex) else @tags
+		existing = @_findTag(name, collection)
 		
 		if existing
 			existing.set(value, true)
@@ -126,7 +125,7 @@ class TagList extends require('event-lite')
 
 
 	closeAllPopups: ()->
-		@pseudoTag.popup.close()
+		@buffer.popup.close()
 		tag.popup.close() for tag in @tags
 		return
 

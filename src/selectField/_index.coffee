@@ -7,15 +7,22 @@ class SelectField extends require('event-lite')
 		@field = template.field.spawn(null, {relatedInstance:@})
 		@input = @field.child.input
 		@_attachBindings()
+		@_setUiLabel(@label)
 
 	_attachBindings: ()->
-		@field.on 'input', ()->
+		@field.on 'input', ()=>
 			@emit 'change', {@label, @value}
 
-		@on 'change', ({label, value})->
-			@field.child.fake.html = label
+		@on 'change', ({label})->
+			@_setUiLabel(label)
 
-	
+	_setUiLabel: (label)->
+		@field.child.fake.html = label
+
+	_setValue: (value)->
+		@input.value = value
+		@_setUiLabel(@label)
+
 	setOptions: (options)->
 		prevOptions = @input.children.slice(1)
 		DOM.batch(prevOptions).remove() if prevOptions.length
@@ -34,7 +41,7 @@ class SelectField extends require('event-lite')
 			get: ()-> @input.label
 		value:
 			get: ()-> @input.value
-			set: (value)-> @input.value = value
+			set: (value)-> @_setValue(value)
 
 
 export default SelectField

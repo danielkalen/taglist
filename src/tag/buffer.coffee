@@ -1,13 +1,16 @@
+import extend from 'smart-extend'
 import SelectField from '../selectField'
 import Tag from './'
 import Popup from '../popup'
+import * as defaults from './defaults'
 import {content, button} from './template'
 
-class PseudoTag extends require('event-lite')
+class BufferTag extends require('event-lite')
 	constructor: (@list)->
 		{@settings} = @list
 		@content = content.spawn(null, relatedInstance:@)
-		@applyButton = button.spawn({data:text:"Add #{@settings.tagLabel}"}, relatedInstance:@)
+		@state = {}
+		@applyButton = @button = button.spawn({data:text:"Add #{@settings.tagLabel}"}, relatedInstance:@)
 		@addButton = @list.els.addButton
 		@popup = new Popup(@addButton, @settings, @settings.boundingEl)
 		@selectField = new SelectField(@settings)
@@ -24,11 +27,6 @@ class PseudoTag extends require('event-lite')
 
 		@addButton.on 'click', ()=>
 			@popup.open()
-		
-		@selectField.on 'apply', ()=>
-			@add(@current)
-			@popup.close()
-			@_setCurrent('')
 
 		@selectField.on 'change', ({value})=>
 			@_setCurrent(value)
@@ -38,6 +36,7 @@ class PseudoTag extends require('event-lite')
 		@option = @list._findOption(name)
 
 		if @option
+			@option = extend.clone(defaults.option, @option)
 			@_initField()
 		else
 			@field = null
@@ -62,16 +61,21 @@ class PseudoTag extends require('event-lite')
 	
 	_notifyChange: ()->
 		@emit 'change', @option, @value
+		@_reset()
 
 	_updateFromUser: (value)->
 		@option.setter.call(@, value)
 
 	_updateFromField: (value)->
 		;
+
+	_reset: ()->
+		@_setCurrent('')
+		@popup.close()
 	
-	_get: Tag::_get
-	_set: Tag::_set
-	_validate: Tag::_validate
+	get: Tag::get
+	set: Tag::set
+	validate: Tag::validate
 	_initField: Tag::_initField
 	_applyChanges: Tag::_applyChanges
 	
