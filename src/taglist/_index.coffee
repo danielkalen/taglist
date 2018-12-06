@@ -8,7 +8,7 @@ import {toArray} from '../helpers'
 
 class TagList extends require('event-lite')
 	constructor: (@targetContainer, @options=[], settings)->
-		super
+		super()
 		@settings = extend.deepOnly('button').clone(defaults, settings)
 		@settings.boundingEl = DOM(@settings.boundingEl)
 		@settings.defaults = toArray(@settings.defaults or [])

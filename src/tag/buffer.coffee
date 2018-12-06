@@ -7,6 +7,7 @@ import {content, button} from './template'
 
 class BufferTag extends require('event-lite')
 	constructor: (@list)->
+		super()
 		{@settings} = @list
 		@content = content.spawn(null, relatedInstance:@)
 		@state = {}
