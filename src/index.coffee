@@ -1,8 +1,7 @@
-import TagList from './taglist'
-import Popup_ from './popup'
-import Tag_ from './tag'
+# import Taglist from './taglist'
 
-export default TagList
-export Popup = Popup_
-export Tag = Tag_
-export version = import '../package.json $ version'
+# export default Taglist
+export {default} from './taglist'
+export {default as Popup} from './popup'
+export {default as Tag} from './tag'
+export {version} from '../package.json'

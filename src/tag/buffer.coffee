@@ -83,3 +83,6 @@ class BufferTag extends require('event-lite')
 	Object.defineProperties @::,
 		els: get: ()-> @el.child
 		value: get: ()-> @get()
+
+
+export default BufferTag

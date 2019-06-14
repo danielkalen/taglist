@@ -7,7 +7,6 @@ import template, {content, button} from './template'
 import * as defaults from './defaults'
 import {ValidationError} from '../errors'
 
-
 class Tag extends require('event-lite')
 	constructor: (option, listSettings)->
 		super()
@@ -132,4 +131,4 @@ class Tag extends require('event-lite')
 
 
 export default Tag
-export BufferTag = import './buffer'
+export {default as BufferTag} from './buffer'

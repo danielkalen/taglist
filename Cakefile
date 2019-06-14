@@ -1,21 +1,18 @@
-process.title = 'simplywatch taglist'
-global.Promise = require('bluebird').config warnings:false, longStackTraces:false
-promiseBreak = require 'promise-break'
-execa = require('execa')
+global.Promise = require 'bluebird'
+Promise.config longStackTraces:process.env.PROMISE_DEBUG?
 extend = require 'smart-extend'
+packageInstall = require 'package-install'
 fs = require 'fs-jetpack'
 chalk = require 'chalk'
 Path = require 'path'
-process.env.SOURCE_MAPS ?= 1
-buildModules = ['google-closure-compiler-js','uglify-js@3.0.24', 'listr', 'simplywatch@3.0.0-l5', 'simplyimport@4.0.10']
-coverageModules = ['istanbul', 'badge-gen', 'coffee-coverage']
-testModules = [
-	'mocha', 'chai', 'github:danielkalen/chai-style'
-	'electron', 'karma@1.6.0', 'karma-chrome-launcher', 'karma-coverage', 'karma-electron', 'karma-firefox-launcher',
-	'karma-ie-launcher', 'karma-mocha', 'karma-mocha-reporter', 'karma-opera-launcher', 'karma-safari-launcher', 'github:danielkalen/karma-sauce-launcher'
-]
 MEASURE_LOG = './.config/measure.json'
 PACKAGE = './package.json'
+process.env.SOURCE_MAPS ?= 1
+buildModules = ['@babel/preset-env','@babel/core']
+coverageModules = ['istanbul', 'badge-gen', 'coffee-coverage']
+testModules = ['@danielkalen/polyfills', 'mocha', 'chai', 'chai-dom', 'chai-style', 'chai-almost', 'chai-asserttype', 'chai-events']
+karmaModules = ['electron', 'karma@1.6.0', 'karma-chrome-launcher', 'karma-coverage', 'karma-electron', 'karma-firefox-launcher', 'karma-ie-launcher', 'karma-mocha', 'karma-opera-launcher', 'karma-safari-launcher', 'github:danielkalen/karma-sauce-launcher']
+
 
 option '-d', '--debug', 'run in debug mode'
 option '-t', '--target [target]', 'target measure dir'
@@ -29,29 +26,13 @@ task 'build', ()->
 
 
 task 'build:js', (options)->
-	debug = if options.debug then '.debug' else ''
-	Promise.resolve(['index.coffee'])
-		.map (file)->
-			{src:"src/index.coffee", dest:"build/taglist#{debug}.js"}
+	console.log 'bundling lib'
+	compileJS(require './.config/rollup.lib')
 
-		.map (file)->
-			title: "Compiling taglist"
-			task: ()-> compileJS(file, debug:options.debug, sourceMap:false, umd:'TagList', target:'browser')
-	
-		.then runTaskList
-
-
-task 'build:test', (options)->	
-	Promise.resolve(['index.coffee'])
-		.tap ()-> invoke 'install:test'
-		.map (file)->
-			{src:"test/test.coffee", dest:"test/test.js"}
-
-		.map (file)->
-			title: "Compiling test"
-			task: ()-> compileJS(file, debug:true, noPkgConfig:true)
-	
-		.then runTaskList
+task 'build:test', (options)->
+	console.log 'bundling test'
+	await invoke 'install:test'
+	compileJS(require './.config/rollup.test')
 
 
 
@@ -64,29 +45,12 @@ task 'watch', ()->
 			invoke 'watch:js'
 			# invoke 'watch:test'
 
-
-
 task 'watch:js', (options)->
-	debug = if options.debug then '.debug' else ''
-	require('simplywatch')
-		globs: "src/*.coffee"
-		bufferTimeout: 1
-		haltSerial: true
-		command: (file, params)->
-			Promise.resolve()
-				.then ()-> {src:"src/index.coffee", dest:"build/taglist#{debug}.js"}
-				.then (file)-> compileJS(file, debug:options.debug, sourceMap:false, umd:'TagList', target:'browser')
-
+	require('rollup').watch(require './.config/rollup.lib')
 
 task 'watch:test', (options)->
-	require('simplywatch')
-		globs: "test/*.coffee"
-		bufferTimeout: 1
-		haltSerial: true
-		command: (file, params)->
-			Promise.resolve()
-				.then ()-> {src:"test/test.coffee", dest:"test/test.js"}
-				.then (file)-> compileJS(file, noPkgConfig:true, debug:true)
+	require('rollup').watch(require './.config/rollup.test')
+
 
 
 
@@ -137,7 +101,7 @@ task 'measure', (options)->
 		.then ()-> invoke 'install:measure'
 		.then ()->
 			DIR = if options.target then options.target else 'build'
-			measure {debug:"./#{DIR}/taglist.debug.js", release:"./#{DIR}/taglist.js"}
+			measure {debug:"./#{DIR}/taglist.js", release:"./#{DIR}/taglist.min.js"}
 
 
 
@@ -152,6 +116,18 @@ task 'measure', (options)->
 
 
 
+
+
+
+compileJS = (configs)->
+	rollup = require 'rollup'
+
+	for config,i in configs
+		console.log "bundling config ##{i+1} (#{config.input})"
+		bundle = await rollup.rollup(config)
+
+		for dest in config.output
+			await bundle.write(dest)
 
 
 
@@ -185,48 +161,3 @@ measure = (file)->
 			console.log "#{chalk.dim 'DEBUG  '} #{chalk.green results.debug.gzip} (#{chalk.yellow results.debug.orig})"
 			console.log "#{chalk.dim 'RELEASE'} #{chalk.green results.release.gzip} (#{chalk.yellow results.release.orig})"
 			console.log '\n'
-
-
-compileJS = (file, options)->
-	Promise.resolve()
-		.then ()-> require('simplyimport')(extend {file:file.src}, options)
-		.then (result)-> fs.writeAsync(file.dest, result)
-		.catch (err)->
-			console.error(err)
-			throw err
-
-
-
-installModules = (targetModules)->
-	targetModules = targetModules
-		.filter (module)-> if typeof module is 'string' then true else module[1]()
-		.map (module)-> if typeof module is 'string' then module else module[0]
-	
-	return if not targetModules.length
-	console.log "#{chalk.yellow('Installing')} #{chalk.dim targetModules.join ', '}"
-	
-	execa('npm', ['install', '--no-save', '--no-purne', targetModules...], {stdio:'inherit'})
-
-
-moduleInstalled = (targetModule)->
-	targetModule = targetModule[0] if typeof targetModule is 'object'
-	if (split=targetModule.split('@')) and split[0].length
-		targetModule = split[0]
-		targetVersion = split[1]
-
-	if /^github:.+?\//.test(targetModule)
-		targetModule = targetModule.replace /^github:.+?\//, ''
-	
-	pkgFile = Path.resolve('node_modules',targetModule,'package.json')
-	exists = fs.exists(pkgFile)
-	
-	if exists and targetVersion?
-		currentVersion = fs.read(pkgFile, 'json').version
-		exists = require('semver').gte(currentVersion, targetVersion)
-
-	return exists
-
-
-
-
-
