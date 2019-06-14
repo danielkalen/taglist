@@ -1,6 +1,6 @@
 {
   "name": "taglist",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Tag-style key:value lists with dynamic value calculation",
   "main": "dist/taglist.js",
   "module": "dist/taglist.esm.js",
