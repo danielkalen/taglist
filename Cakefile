@@ -64,35 +64,19 @@ task 'install', ()->
 
 
 task 'install:build', ()->
-	Promise.resolve()
-		.then ()-> buildModules.filter (module)-> not moduleInstalled(module)
-		.tap (missingModules)-> promiseBreak() if missingModules.length is 0
-		.tap (missingModules)-> installModules(missingModules)
-		.catch promiseBreak.end
+	packageInstall(buildModules)
 
 
 task 'install:test', ()->
-	Promise.resolve()
-		.then ()-> testModules.filter (module)-> not moduleInstalled(module)
-		.tap (missingModules)-> promiseBreak() if missingModules.length is 0
-		.tap (missingModules)-> installModules(missingModules)
-		.catch promiseBreak.end
+	packageInstall(testModules)
 
 
 task 'install:coverage', ()->
-	Promise.resolve()
-		.then ()-> coverageModules.filter (module)-> not moduleInstalled(module)
-		.tap (missingModules)-> promiseBreak() if missingModules.length is 0
-		.tap (missingModules)-> installModules(missingModules)
-		.catch promiseBreak.end
+	packageInstall(coverageModules)
 
 
 task 'install:measure', ()->
-	Promise.resolve()
-		.then ()-> ['gzipped', 'sugar'].filter (module)-> not moduleInstalled(module)
-		.tap (missingModules)-> promiseBreak() if missingModules.length is 0
-		.tap (missingModules)-> installModules(missingModules)
-		.catch promiseBreak.end
+	packageInstall(['gzipped', 'sugar'])
 
 
 
