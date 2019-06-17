@@ -1,5 +1,6 @@
 global.Promise = require 'bluebird'
 Promise.config longStackTraces:process.env.PROMISE_DEBUG?
+promiseBreak = require 'promise-break'
 extend = require 'smart-extend'
 packageInstall = require 'package-install'
 fs = require 'fs-jetpack'

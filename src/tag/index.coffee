@@ -131,4 +131,3 @@ class Tag extends require('event-lite')
 
 
 export default Tag
-export {default as BufferTag} from './buffer'
