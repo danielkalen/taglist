@@ -40,7 +40,8 @@
     "event-lite": "^0.1.1",
     "popper.js": "^1.14.3",
     "quickdom": "^1.0.86",
-    "rxjs-compat": "^6.1.0"
+    "rxjs-compat": "^6.1.0",
+    "smart-extend": "^1.7.4"
   },
   "devDependencies": {
     "bluebird": "^3.5.0",
