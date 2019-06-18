@@ -1,4 +1,4 @@
-(function(g,f){typeof exports==='object'&&typeof module!=='undefined'?f(exports,require('quickdom'),require('popper.js'),require('error-ex')):typeof define==='function'&&define.amd?define(['exports','quickdom','popper.js','error-ex'],f):(g=g||self,f(g.taglist={},g.DOM$1,g.Popper,g.errorEx));}(this,function(exports, DOM$1, Popper, errorEx){'use strict';DOM$1=DOM$1&&DOM$1.hasOwnProperty('default')?DOM$1['default']:DOM$1;Popper=Popper&&Popper.hasOwnProperty('default')?Popper['default']:Popper;errorEx=errorEx&&errorEx.hasOwnProperty('default')?errorEx['default']:errorEx;var defaults = {
+(function(g,f){typeof exports==='object'&&typeof module!=='undefined'?f(exports,require('quickdom'),require('smart-extend'),require('popper.js'),require('error-ex')):typeof define==='function'&&define.amd?define(['exports','quickdom','smart-extend','popper.js','error-ex'],f):(g=g||self,f(g.taglist={},g.DOM$1,g.extend,g.Popper,g.errorEx));}(this,function(exports, DOM$1, extend, Popper, errorEx){'use strict';DOM$1=DOM$1&&DOM$1.hasOwnProperty('default')?DOM$1['default']:DOM$1;extend=extend&&extend.hasOwnProperty('default')?extend['default']:extend;Popper=Popper&&Popper.hasOwnProperty('default')?Popper['default']:Popper;errorEx=errorEx&&errorEx.hasOwnProperty('default')?errorEx['default']:errorEx;var defaults = {
   boundingEl: document.body,
   tagLabel: 'Option',
   requireDefaults: false,
@@ -389,11 +389,11 @@ Tag = function () {
     constructor(option$1, listSettings) {
       var settings1, settings2;
       super();
-      settings1 = extender.keys(['button', 'fontFamily']).clone(listSettings);
-      settings2 = extender.keys(['padding', 'maxWidth']).clone(option$1);
-      this.settings = extender.clone(settings, listSettings.tag, settings1, settings2);
-      this.option = extender.clone(option, option$1);
-      this.option.popup = extender.clone(listSettings.popup, this.option.popup);
+      settings1 = extend.keys(['button', 'fontFamily']).clone(listSettings);
+      settings2 = extend.keys(['padding', 'maxWidth']).clone(option$1);
+      this.settings = extend.clone(settings, listSettings.tag, settings1, settings2);
+      this.option = extend.clone(option, option$1);
+      this.option.popup = extend.clone(listSettings.popup, this.option.popup);
       this.state = {};
       this.name = this.option.name;
       this.label = this.option.label;
@@ -843,7 +843,7 @@ BufferTag = function () {
       this.option = this.list._findOption(name);
 
       if (this.option) {
-        this.option = extender.clone(option, this.option);
+        this.option = extend.clone(option, this.option);
 
         this._initField();
       } else {
@@ -945,7 +945,7 @@ TagList = function () {
       super();
       this.targetContainer = targetContainer;
       this.options = options;
-      this.settings = extender.deepOnly('button').clone(defaults, settings);
+      this.settings = extend.deepOnly('button').clone(defaults, settings);
       this.settings.boundingEl = DOM$1(this.settings.boundingEl);
       this.settings.defaults = toArray(this.settings.defaults || []);
       this.tags = [];
@@ -1190,4 +1190,4 @@ TagList = function () {
   return TagList;
 }.call(undefined);
 
-var extender = TagList;var version = "3.0.4";exports.BufferTag=BufferTag$1;exports.Popup=Popup$1;exports.Tag=Tag$1;exports.default=extender;exports.version=version;Object.defineProperty(exports,'__esModule',{value:true});}));
+var TagList$1 = TagList;var version = "3.0.5";exports.BufferTag=BufferTag$1;exports.Popup=Popup$1;exports.Tag=Tag$1;exports.default=TagList$1;exports.version=version;Object.defineProperty(exports,'__esModule',{value:true});}));
