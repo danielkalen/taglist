@@ -1,5 +1,5 @@
 import DOM from 'quickdom'
-import extend from 'smart-extend'
+import extender from 'smart-extend'
 import Popup from '../popup'
 import stringify from './stringify'
 import updater from './updater'
@@ -10,11 +10,11 @@ import {ValidationError} from '../errors'
 class Tag extends require('event-lite')
 	constructor: (option, listSettings)->
 		super()
-		settings1 = extend.keys(['button','fontFamily']).clone(listSettings)
-		settings2 = extend.keys(['padding', 'maxWidth']).clone(option)
-		@settings = extend.clone(defaults.settings, listSettings.tag, settings1, settings2)
-		@option = extend.clone(defaults.option, option)
-		@option.popup = extend.clone(listSettings.popup, @option.popup)
+		settings1 = extender.keys(['button','fontFamily']).clone(listSettings)
+		settings2 = extender.keys(['padding', 'maxWidth']).clone(option)
+		@settings = extender.clone(defaults.settings, listSettings.tag, settings1, settings2)
+		@option = extender.clone(defaults.option, option)
+		@option.popup = extender.clone(listSettings.popup, @option.popup)
 		@state = {}
 		@name = @option.name
 		@label = @option.label

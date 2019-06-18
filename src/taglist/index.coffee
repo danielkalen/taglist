@@ -1,15 +1,16 @@
-import extend from 'smart-extend'
+import extender from 'smart-extend'
 import DOM from 'quickdom'
 import defaults from './defaults'
 import template from './template'
-import Tag, {BufferTag} from '../tag'
+import Tag from '../tag'
+import BufferTag from '../tag/buffer'
 import Popup from '../popup'
 import {toArray} from '../helpers'
 
 class TagList extends require('event-lite')
 	constructor: (@targetContainer, @options=[], settings)->
 		super()
-		@settings = extend.deepOnly('button').clone(defaults, settings)
+		@settings = extender.deepOnly('button').clone(defaults, settings)
 		@settings.boundingEl = DOM(@settings.boundingEl)
 		@settings.defaults = toArray(@settings.defaults or [])
 		@tags = []

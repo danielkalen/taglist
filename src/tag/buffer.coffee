@@ -1,4 +1,4 @@
-import extend from 'smart-extend'
+import extender from 'smart-extend'
 import SelectField from '../selectField'
 import Tag from './'
 import Popup from '../popup'
@@ -37,7 +37,7 @@ class BufferTag extends require('event-lite')
 		@option = @list._findOption(name)
 
 		if @option
-			@option = extend.clone(defaults.option, @option)
+			@option = extender.clone(defaults.option, @option)
 			@_initField()
 		else
 			@field = null

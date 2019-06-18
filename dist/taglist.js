@@ -382,7 +382,235 @@ var option = {
   validate: function (value) {
     return value != null;
   }
-};var ValidationError = errorEx('ValidationError');var arrowDown = "data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTguMS4xLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDMwOS4xNTYgMzA5LjE1NiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMzA5LjE1NiAzMDkuMTU2OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgd2lkdGg9IjY0cHgiIGhlaWdodD0iNjRweCI+CjxnPgoJPGc+CgkJPHBvbHlnb24gcG9pbnRzPSIyODguNDYxLDY0LjkyOSAxNTQuNTg5LDIwMi43NjYgMjAuNzIzLDY0Ljk0IDAsODUuMDcgMTU0LjU4OSwyNDQuMjI4IDMwOS4xNTYsODUuMDcgICAiIGZpbGw9IiMwMDAwMDAiLz4KCTwvZz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K"; // exports.checkmark = """
+};var ValidationError = errorEx('ValidationError');var Tag;
+
+Tag = function () {
+  class Tag extends require('event-lite') {
+    constructor(option$1, listSettings) {
+      var settings1, settings2;
+      super();
+      settings1 = extend.keys(['button', 'fontFamily']).clone(listSettings);
+      settings2 = extend.keys(['padding', 'maxWidth']).clone(option$1);
+      this.settings = extend.clone(settings, listSettings.tag, settings1, settings2);
+      this.option = extend.clone(option, option$1);
+      this.option.popup = extend.clone(listSettings.popup, this.option.popup);
+      this.state = {};
+      this.name = this.option.name;
+      this.label = this.option.label;
+      this.el = template$2.spawn(null, {
+        relatedInstance: this
+      });
+      this.content = content.spawn(null, {
+        relatedInstance: this
+      });
+      this.button = button$1.spawn({
+        data: {
+          text: 'Apply'
+        }
+      }, {
+        relatedInstance: this
+      });
+      this.popup = new Popup$1(this.el, listSettings, listSettings.boundingEl);
+      this.popup.setContent(this.content);
+
+      if (this.settings.updateWhen === 'applied') {
+        this.button.insertAfter(this.content);
+      }
+
+      this._setup();
+
+      this._attachBindings();
+    }
+
+    _setup() {
+      if (this.option.hideLabel) {
+        return this.els.label.hide();
+      } else {
+        return this.els.label.html = `${this.option.label}: `;
+      }
+    }
+
+    _attachBindings() {
+      this.els.removeButton.on('click', event => {
+        this.emit('remove');
+        return event.stopPropagation();
+      });
+      this.el.on('click', () => {
+        return this.popup.open();
+      });
+      this.button.on('click', e => {
+        e.stopPropagation();
+
+        if (this._applyChanges()) {
+          return this.popup.close();
+        }
+      });
+
+      if (this.settings.updateWhen === 'applied') {
+        this.popup.on('open', () => {
+          var base;
+          return (base = this.state).valueOnFocus != null ? base.valueOnFocus : base.valueOnFocus = this.value;
+        });
+        return this.popup.on('blur', () => {
+          if (this.value !== this.state.valueOnFocus) {
+            if (!this._applyChanges()) {
+              console.log('opening');
+              return this.popup.open();
+            }
+          }
+        });
+      }
+    }
+
+    _initField() {
+      this.field = this.option.field.call(this, this.content.raw, updater(this));
+
+      if (this.option.default) {
+        return this.set(this.option.default, true);
+      }
+    }
+
+    _domInsert(method, target) {
+      this.el[method](target);
+
+      this._initField();
+
+      return this;
+    }
+
+    _notifyChange() {
+      return this.emit('change', this.value);
+    }
+
+    _updateText(value) {
+      return this.els.value.text = stringify(value, this.option.formatter);
+    }
+
+    _updateFromUser(value, SILENT) {
+      this._updateText(value);
+
+      this.option.setter.call(this, value);
+
+      if (!SILENT) {
+        return this._notifyChange();
+      }
+    }
+
+    _updateFromField(value) {
+      this._updateText(value);
+
+      if (this.settings.updateWhen !== 'applied') {
+        return this._notifyChange();
+      }
+    }
+
+    _applyChanges() {
+      var validation;
+      validation = this.validate();
+
+      if (validation === true) {
+        this.state.valueOnFocus = null;
+
+        this._notifyChange();
+
+        return true;
+      } else if (validation instanceof Error) {
+        this.button.child.errorMessage.set(validation.message);
+        this.emit('error', validation);
+        return false;
+      }
+    }
+
+    get(skipTransform) {
+      var value;
+      value = this.option.getter.call(this);
+
+      if (this.option.transformOutput && !skipTransform) {
+        value = this.option.transformOutput(value);
+      }
+
+      return value;
+    }
+
+    set(value, SILENT) {
+      if (typeof value === 'function') {
+        value = value();
+      }
+
+      if (this.option.transformInput) {
+        value = this.option.transformInput(value);
+      }
+
+      return this._updateFromUser(value, SILENT);
+    }
+
+    validate() {
+      var err, result;
+
+      if (!this.option.validate) {
+        return true;
+      }
+
+      try {
+        result = this.option.validate.call(this, this.value);
+      } catch (error) {
+        err = error;
+        result = err;
+      }
+
+      switch (false) {
+        case result !== true:
+          return true;
+
+        case result !== false:
+          return new ValidationError("validation failed");
+
+        case typeof result !== 'string':
+          return new ValidationError(result);
+
+        case !(result instanceof Error):
+          return result;
+      }
+    }
+
+    appendTo(target) {
+      return this._domInsert('appendTo', target);
+    }
+
+    prependTo(target) {
+      return this._domInsert('prependTo', target);
+    }
+
+    insertBefore(target) {
+      return this._domInsert('insertBefore', target);
+    }
+
+    insertAfter(target) {
+      return this._domInsert('insertAfter', target);
+    }
+
+  }
+  Object.defineProperties(Tag.prototype, {
+    els: {
+      get: function () {
+        return this.el.child;
+      }
+    },
+    value: {
+      get: function () {
+        return this.get();
+      }
+    },
+    rawValue: {
+      get: function () {
+        return this.get(true);
+      }
+    }
+  });
+  return Tag;
+}.call(undefined);
+
+var Tag$1 = Tag;var arrowDown = "data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTguMS4xLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDMwOS4xNTYgMzA5LjE1NiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMzA5LjE1NiAzMDkuMTU2OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgd2lkdGg9IjY0cHgiIGhlaWdodD0iNjRweCI+CjxnPgoJPGc+CgkJPHBvbHlnb24gcG9pbnRzPSIyODguNDYxLDY0LjkyOSAxNTQuNTg5LDIwMi43NjYgMjAuNzIzLDY0Ljk0IDAsODUuMDcgMTU0LjU4OSwyNDQuMjI4IDMwOS4xNTYsODUuMDcgICAiIGZpbGw9IiMwMDAwMDAiLz4KCTwvZz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K"; // exports.checkmark = """
 var button$2 = button.extend(['div', {
   computers: {
     _init: function () {
@@ -690,235 +918,7 @@ BufferTag = function () {
   return BufferTag;
 }.call(undefined);
 
-var BufferTag$1 = BufferTag;var Tag;
-
-Tag = function () {
-  class Tag extends require('event-lite') {
-    constructor(option$1, listSettings) {
-      var settings1, settings2;
-      super();
-      settings1 = extend.keys(['button', 'fontFamily']).clone(listSettings);
-      settings2 = extend.keys(['padding', 'maxWidth']).clone(option$1);
-      this.settings = extend.clone(settings, listSettings.tag, settings1, settings2);
-      this.option = extend.clone(option, option$1);
-      this.option.popup = extend.clone(listSettings.popup, this.option.popup);
-      this.state = {};
-      this.name = this.option.name;
-      this.label = this.option.label;
-      this.el = template$2.spawn(null, {
-        relatedInstance: this
-      });
-      this.content = content.spawn(null, {
-        relatedInstance: this
-      });
-      this.button = button$1.spawn({
-        data: {
-          text: 'Apply'
-        }
-      }, {
-        relatedInstance: this
-      });
-      this.popup = new Popup$1(this.el, listSettings, listSettings.boundingEl);
-      this.popup.setContent(this.content);
-
-      if (this.settings.updateWhen === 'applied') {
-        this.button.insertAfter(this.content);
-      }
-
-      this._setup();
-
-      this._attachBindings();
-    }
-
-    _setup() {
-      if (this.option.hideLabel) {
-        return this.els.label.hide();
-      } else {
-        return this.els.label.html = `${this.option.label}: `;
-      }
-    }
-
-    _attachBindings() {
-      this.els.removeButton.on('click', event => {
-        this.emit('remove');
-        return event.stopPropagation();
-      });
-      this.el.on('click', () => {
-        return this.popup.open();
-      });
-      this.button.on('click', e => {
-        e.stopPropagation();
-
-        if (this._applyChanges()) {
-          return this.popup.close();
-        }
-      });
-
-      if (this.settings.updateWhen === 'applied') {
-        this.popup.on('open', () => {
-          var base;
-          return (base = this.state).valueOnFocus != null ? base.valueOnFocus : base.valueOnFocus = this.value;
-        });
-        return this.popup.on('blur', () => {
-          if (this.value !== this.state.valueOnFocus) {
-            if (!this._applyChanges()) {
-              console.log('opening');
-              return this.popup.open();
-            }
-          }
-        });
-      }
-    }
-
-    _initField() {
-      this.field = this.option.field.call(this, this.content.raw, updater(this));
-
-      if (this.option.default) {
-        return this.set(this.option.default, true);
-      }
-    }
-
-    _domInsert(method, target) {
-      this.el[method](target);
-
-      this._initField();
-
-      return this;
-    }
-
-    _notifyChange() {
-      return this.emit('change', this.value);
-    }
-
-    _updateText(value) {
-      return this.els.value.text = stringify(value, this.option.formatter);
-    }
-
-    _updateFromUser(value, SILENT) {
-      this._updateText(value);
-
-      this.option.setter.call(this, value);
-
-      if (!SILENT) {
-        return this._notifyChange();
-      }
-    }
-
-    _updateFromField(value) {
-      this._updateText(value);
-
-      if (this.settings.updateWhen !== 'applied') {
-        return this._notifyChange();
-      }
-    }
-
-    _applyChanges() {
-      var validation;
-      validation = this.validate();
-
-      if (validation === true) {
-        this.state.valueOnFocus = null;
-
-        this._notifyChange();
-
-        return true;
-      } else if (validation instanceof Error) {
-        this.button.child.errorMessage.set(validation.message);
-        this.emit('error', validation);
-        return false;
-      }
-    }
-
-    get(skipTransform) {
-      var value;
-      value = this.option.getter.call(this);
-
-      if (this.option.transformOutput && !skipTransform) {
-        value = this.option.transformOutput(value);
-      }
-
-      return value;
-    }
-
-    set(value, SILENT) {
-      if (typeof value === 'function') {
-        value = value();
-      }
-
-      if (this.option.transformInput) {
-        value = this.option.transformInput(value);
-      }
-
-      return this._updateFromUser(value, SILENT);
-    }
-
-    validate() {
-      var err, result;
-
-      if (!this.option.validate) {
-        return true;
-      }
-
-      try {
-        result = this.option.validate.call(this, this.value);
-      } catch (error) {
-        err = error;
-        result = err;
-      }
-
-      switch (false) {
-        case result !== true:
-          return true;
-
-        case result !== false:
-          return new ValidationError("validation failed");
-
-        case typeof result !== 'string':
-          return new ValidationError(result);
-
-        case !(result instanceof Error):
-          return result;
-      }
-    }
-
-    appendTo(target) {
-      return this._domInsert('appendTo', target);
-    }
-
-    prependTo(target) {
-      return this._domInsert('prependTo', target);
-    }
-
-    insertBefore(target) {
-      return this._domInsert('insertBefore', target);
-    }
-
-    insertAfter(target) {
-      return this._domInsert('insertAfter', target);
-    }
-
-  }
-  Object.defineProperties(Tag.prototype, {
-    els: {
-      get: function () {
-        return this.el.child;
-      }
-    },
-    value: {
-      get: function () {
-        return this.get();
-      }
-    },
-    rawValue: {
-      get: function () {
-        return this.get(true);
-      }
-    }
-  });
-  return Tag;
-}.call(undefined);
-
-var Tag$1 = Tag;var toArray = function (object) {
+var BufferTag$1 = BufferTag;var toArray = function (object) {
   var name, results, value;
 
   if (Array.isArray(object)) {
@@ -1190,4 +1190,4 @@ TagList = function () {
   return TagList;
 }.call(undefined);
 
-var extend = TagList;var version = "3.0.1";exports.Popup=Popup$1;exports.Tag=Tag$1;exports.default=extend;exports.version=version;Object.defineProperty(exports,'__esModule',{value:true});}));
+var extend = TagList;var version = "3.0.3";exports.BufferTag=BufferTag$1;exports.Popup=Popup$1;exports.Tag=Tag$1;exports.default=extend;exports.version=version;Object.defineProperty(exports,'__esModule',{value:true});}));
