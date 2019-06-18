@@ -389,11 +389,11 @@ Tag = function () {
     constructor(option$1, listSettings) {
       var settings1, settings2;
       super();
-      settings1 = extend.keys(['button', 'fontFamily']).clone(listSettings);
-      settings2 = extend.keys(['padding', 'maxWidth']).clone(option$1);
-      this.settings = extend.clone(settings, listSettings.tag, settings1, settings2);
-      this.option = extend.clone(option, option$1);
-      this.option.popup = extend.clone(listSettings.popup, this.option.popup);
+      settings1 = extender.keys(['button', 'fontFamily']).clone(listSettings);
+      settings2 = extender.keys(['padding', 'maxWidth']).clone(option$1);
+      this.settings = extender.clone(settings, listSettings.tag, settings1, settings2);
+      this.option = extender.clone(option, option$1);
+      this.option.popup = extender.clone(listSettings.popup, this.option.popup);
       this.state = {};
       this.name = this.option.name;
       this.label = this.option.label;
@@ -843,7 +843,7 @@ BufferTag = function () {
       this.option = this.list._findOption(name);
 
       if (this.option) {
-        this.option = extend.clone(option, this.option);
+        this.option = extender.clone(option, this.option);
 
         this._initField();
       } else {
@@ -945,7 +945,7 @@ TagList = function () {
       super();
       this.targetContainer = targetContainer;
       this.options = options;
-      this.settings = extend.deepOnly('button').clone(defaults, settings);
+      this.settings = extender.deepOnly('button').clone(defaults, settings);
       this.settings.boundingEl = DOM$1(this.settings.boundingEl);
       this.settings.defaults = toArray(this.settings.defaults || []);
       this.tags = [];
@@ -1190,4 +1190,4 @@ TagList = function () {
   return TagList;
 }.call(undefined);
 
-var extend = TagList;var version = "3.0.3";export default extend;export{BufferTag$1 as BufferTag,Popup$1 as Popup,Tag$1 as Tag,version};
+var extender = TagList;var version = "3.0.4";export default extender;export{BufferTag$1 as BufferTag,Popup$1 as Popup,Tag$1 as Tag,version};
